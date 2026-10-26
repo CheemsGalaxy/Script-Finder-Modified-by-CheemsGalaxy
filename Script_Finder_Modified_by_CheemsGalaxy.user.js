@@ -17,8 +17,8 @@
 // @grant             GM_openInTab
 // @run-at            document-idle
 // @license           MIT
-// @updateURL         https://raw.githubusercontent.com/CheemsGalaxy/Script-Finder-Modified-by-CheemsGalaxy/main/Script-Finder-Modified-by-CheemsGalaxy.meta.js
-// @downloadURL       https://raw.githubusercontent.com/CheemsGalaxy/Script-Finder-Modified-by-CheemsGalaxy/main/Script-Finder-Modified-by-CheemsGalaxy.user.js
+// @updateURL         https://cdn.githubraw.com/CheemsGalaxy/Script-Finder-Modified-by-CheemsGalaxy/main/Script_Finder_Modified_by_CheemsGalaxy.user.js
+// @downloadURL       https://cdn.githubraw.com/CheemsGalaxy/Script-Finder-Modified-by-CheemsGalaxy/main/Script_Finder_Modified_by_CheemsGalaxy.user.js
 // ==/UserScript==
  
 (function () {
