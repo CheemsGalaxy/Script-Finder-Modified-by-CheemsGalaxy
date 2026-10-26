@@ -2,7 +2,7 @@
 // @name              Script Finder+ | Modified by: CheemsGalaxy
 // @description       Script Finder allows you to find userscripts from Greasy Fork / SleazyFork on any website.
 // @namespace         https://github.com/CheemsGalaxy
-// @version           2026.10.25.3
+// @version           2026.10.26.1
 // @author            Original: shiquda & 人民的勤务员 <china.qinwuyuan@gmail.com> | Modified by: CheemsGalaxy
 // @supportURL        https://github.com/CheemsGalaxy/Script-Finder-Modified-by-CheemsGalaxy/issues
 // @homepageURL       https://github.com/CheemsGalaxy/Script-Finder-Modified-by-CheemsGalaxy
