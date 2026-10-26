@@ -1,0 +1,2639 @@
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406
+407
+408
+409
+410
+411
+412
+413
+414
+415
+416
+417
+418
+419
+420
+421
+422
+423
+424
+425
+426
+427
+428
+429
+430
+431
+432
+433
+434
+435
+436
+437
+438
+439
+440
+441
+442
+443
+444
+445
+446
+447
+448
+449
+450
+451
+452
+453
+454
+455
+456
+457
+458
+459
+460
+461
+462
+463
+464
+465
+466
+467
+468
+469
+470
+471
+472
+473
+474
+475
+476
+477
+478
+479
+480
+481
+482
+483
+484
+485
+486
+487
+488
+489
+490
+491
+492
+493
+494
+495
+496
+497
+498
+499
+500
+501
+502
+503
+504
+505
+506
+507
+508
+509
+510
+511
+512
+513
+514
+515
+516
+517
+518
+519
+520
+521
+522
+523
+524
+525
+526
+527
+528
+529
+530
+531
+532
+533
+534
+535
+536
+537
+538
+539
+540
+541
+542
+543
+544
+545
+546
+547
+548
+549
+550
+551
+552
+553
+554
+555
+556
+557
+558
+559
+560
+561
+562
+563
+564
+565
+566
+567
+568
+569
+570
+571
+572
+573
+574
+575
+576
+577
+578
+579
+580
+581
+582
+583
+584
+585
+586
+587
+588
+589
+590
+591
+592
+593
+594
+595
+596
+597
+598
+599
+600
+601
+602
+603
+604
+605
+606
+607
+608
+609
+610
+611
+612
+613
+614
+615
+616
+617
+618
+619
+620
+621
+622
+623
+624
+625
+626
+627
+628
+629
+630
+631
+632
+633
+634
+635
+636
+637
+638
+639
+640
+641
+642
+643
+644
+645
+646
+647
+648
+649
+650
+651
+652
+653
+654
+655
+656
+657
+658
+659
+660
+661
+662
+663
+664
+665
+666
+667
+668
+669
+670
+671
+672
+673
+674
+675
+676
+677
+678
+679
+680
+681
+682
+683
+684
+685
+686
+687
+688
+689
+690
+691
+692
+693
+694
+695
+696
+697
+698
+699
+700
+701
+702
+703
+704
+705
+706
+707
+708
+709
+710
+711
+712
+713
+714
+715
+716
+717
+718
+719
+720
+721
+722
+723
+724
+725
+726
+727
+728
+729
+730
+731
+732
+733
+734
+735
+736
+737
+738
+739
+740
+741
+742
+743
+744
+745
+746
+747
+748
+749
+750
+751
+752
+753
+754
+755
+756
+757
+758
+759
+760
+761
+762
+763
+764
+765
+766
+767
+768
+769
+770
+771
+772
+773
+774
+775
+776
+777
+778
+779
+780
+781
+782
+783
+784
+785
+786
+787
+788
+789
+790
+791
+792
+793
+794
+795
+796
+797
+798
+799
+800
+801
+802
+803
+804
+805
+806
+807
+808
+809
+810
+811
+812
+813
+814
+815
+816
+817
+818
+819
+820
+821
+822
+823
+824
+825
+826
+827
+828
+829
+830
+831
+832
+833
+834
+835
+836
+837
+838
+839
+840
+841
+842
+843
+844
+845
+846
+847
+848
+849
+850
+851
+852
+853
+854
+855
+856
+857
+858
+859
+860
+861
+862
+863
+864
+865
+866
+867
+868
+869
+870
+871
+872
+873
+874
+875
+876
+877
+878
+879
+880
+881
+882
+883
+884
+885
+886
+887
+888
+889
+890
+891
+892
+893
+894
+895
+896
+897
+898
+899
+900
+901
+902
+903
+904
+905
+906
+907
+908
+909
+910
+911
+912
+913
+914
+915
+916
+917
+918
+919
+920
+921
+922
+923
+924
+925
+926
+927
+928
+929
+930
+931
+932
+933
+934
+935
+936
+937
+938
+939
+940
+941
+942
+943
+944
+945
+946
+947
+948
+949
+950
+951
+952
+953
+954
+955
+956
+957
+958
+959
+960
+961
+962
+963
+964
+965
+966
+967
+968
+969
+970
+971
+972
+973
+974
+975
+976
+977
+978
+979
+980
+981
+982
+983
+984
+985
+986
+987
+988
+989
+990
+991
+992
+993
+994
+995
+996
+997
+998
+999
+1000
+1001
+1002
+1003
+1004
+1005
+1006
+1007
+1008
+1009
+1010
+1011
+1012
+1013
+1014
+1015
+1016
+1017
+1018
+1019
+1020
+1021
+1022
+1023
+1024
+1025
+1026
+1027
+1028
+1029
+1030
+1031
+1032
+1033
+1034
+1035
+1036
+1037
+1038
+1039
+1040
+1041
+1042
+1043
+1044
+1045
+1046
+1047
+1048
+1049
+1050
+1051
+1052
+1053
+1054
+1055
+1056
+1057
+1058
+1059
+1060
+1061
+1062
+1063
+1064
+1065
+1066
+1067
+1068
+1069
+1070
+1071
+1072
+1073
+1074
+1075
+1076
+1077
+1078
+1079
+1080
+1081
+1082
+1083
+1084
+1085
+1086
+1087
+1088
+1089
+1090
+1091
+1092
+1093
+1094
+1095
+1096
+1097
+1098
+1099
+1100
+1101
+1102
+1103
+1104
+1105
+1106
+1107
+1108
+1109
+1110
+1111
+1112
+1113
+1114
+1115
+1116
+1117
+1118
+1119
+1120
+1121
+1122
+1123
+1124
+1125
+1126
+1127
+1128
+1129
+1130
+1131
+1132
+1133
+1134
+1135
+1136
+1137
+1138
+1139
+1140
+1141
+1142
+1143
+1144
+1145
+1146
+1147
+1148
+1149
+1150
+1151
+1152
+1153
+1154
+1155
+1156
+1157
+1158
+1159
+1160
+1161
+1162
+1163
+1164
+1165
+1166
+1167
+1168
+1169
+1170
+1171
+1172
+1173
+1174
+1175
+1176
+1177
+1178
+1179
+1180
+1181
+1182
+1183
+1184
+1185
+1186
+1187
+1188
+1189
+1190
+1191
+1192
+1193
+1194
+1195
+1196
+1197
+1198
+1199
+1200
+1201
+1202
+1203
+1204
+1205
+1206
+1207
+1208
+1209
+1210
+1211
+1212
+1213
+1214
+1215
+1216
+1217
+1218
+1219
+1220
+1221
+1222
+1223
+1224
+1225
+1226
+1227
+1228
+1229
+1230
+1231
+1232
+1233
+1234
+1235
+1236
+1237
+1238
+1239
+1240
+1241
+1242
+1243
+1244
+1245
+1246
+1247
+1248
+1249
+1250
+1251
+1252
+1253
+1254
+1255
+1256
+1257
+1258
+1259
+1260
+1261
+1262
+1263
+1264
+1265
+1266
+1267
+1268
+1269
+1270
+1271
+1272
+1273
+1274
+1275
+1276
+1277
+1278
+1279
+1280
+1281
+1282
+1283
+1284
+1285
+1286
+1287
+1288
+1289
+1290
+1291
+1292
+1293
+1294
+1295
+1296
+1297
+1298
+1299
+1300
+1301
+1302
+1303
+1304
+1305
+1306
+1307
+1308
+1309
+1310
+1311
+1312
+1313
+1314
+1315
+1316
+1317
+1318
+1319
+1320
+1321
+1322
+1323
+1324
+1325
+1326
+1327
+1328
+1329
+// ==UserScript==
+// @name              Script Finder+ | Modified by: CheemsGalaxy
+// @description       Script Finder allows you to find userscripts from Greasy Fork / SleazyFork on any website.
+// @namespace         https://github.com/ChinaGodMan/UserScripts
+// @version           2026.10.25.3
+// @author            Original: shiquda & 人民的勤务员 <china.qinwuyuan@gmail.com> | Modified by: CheemsGalaxy
+// @supportURL        https://greasyfork.org/en/scripts/600159-script-finder-modified-by-cheemsgalaxy/feedback
+// @homepageURL       https://github.com/ChinaGodMan/UserScripts
+// @match             *://*/*
+// @noframes
+// @connect           greasyfork.org
+// @connect           sleazyfork.org
+// @grant             GM_xmlhttpRequest
+// @grant             GM_getValue
+// @grant             GM_setValue
+// @grant             GM_registerMenuCommand
+// @grant             GM_openInTab
+// @run-at            document-idle
+// @license           MIT
+// ==/UserScript==
+ 
+(function () {
+  "use strict";
+ 
+  // ---------- Guards ----------
+  try {
+    if (window.self !== window.top) return;
+    if (window.__scriptFinderPlus) return;
+    window.__scriptFinderPlus = true;
+  } catch (e) {
+    return;
+  }
+ 
+  // ---------- i18n ----------
+  const translations = {
+    "en,en-GB": {
+      Author: "Author",
+      Installs: "Installs",
+      DailyInstalls: "Daily Installs",
+      Created: "Created",
+      Updated: "Updated",
+      Rating: "Rating",
+      LoadingScripts: "Loading scripts...",
+      LoadMore: "Load more",
+      Retry: "Retry",
+      AllScriptsLoaded: "All scripts loaded",
+      SearchPlaceholder: "Search scripts...",
+      ViewOnGreasyfork: "View on Greasyfork",
+      errorMessage:
+        "Failed to retrieve script information or there are no available scripts for this domain.",
+      NoScripts: "No scripts found for this domain.",
+      LoadFailed: "Failed to load scripts",
+      TTBlocked:
+        "This page blocks safe HTML parsing. Please try again later.",
+      Loading: "Loading...",
+      Scripts: "Scripts",
+      Install: "Install",
+      Close: "Close",
+      MenuToggle: "Open/Close",
+      MenuResetPos: "Reset tab position",
+      RateLimited: "Too many requests: the server is limiting us. Retry in {n}s.",
+      RateLimitedDone: "You can retry now.",
+      SortDaily: "Daily installs",
+      SortUpdated: "Recently updated",
+      SortTotal: "Total installs",
+      SortRating: "Top rated",
+    },
+    "zh-CN,zh,zh-SG": {
+      Author: "作者",
+      Installs: "安装数量",
+      DailyInstalls: "每日安装",
+      Created: "创建日期",
+      Updated: "更新时间",
+      Rating: "评分",
+      LoadingScripts: "正在加载脚本...",
+      LoadMore: "加载更多",
+      Retry: "重试",
+      AllScriptsLoaded: "所有脚本已加载",
+      SearchPlaceholder: "搜索脚本...",
+      ViewOnGreasyfork: "在Greasyfork查看",
+      errorMessage: "无法检索脚本信息或该域没有可用的脚本。",
+      NoScripts: "该域名下没有找到脚本。",
+      LoadFailed: "加载脚本失败",
+      TTBlocked: "此页面阻止了安全的 HTML 解析，请稍后再试。",
+      Loading: "载入中...",
+      Scripts: "脚本",
+      Install: "安装",
+      Close: "关闭",
+      MenuToggle: "打开/关闭",
+      MenuResetPos: "重置标签位置",
+      RateLimited: "请求过多，服务器正在限流。{n} 秒后可重试。",
+      RateLimitedDone: "现在可以重试了。",
+      SortDaily: "每日安装",
+      SortUpdated: "最近更新",
+      SortTotal: "总安装量",
+      SortRating: "评分最高",
+    },
+    "zh-TW,zh-HK,zh-MO": {
+      Author: "作者",
+      Installs: "安裝數量",
+      DailyInstalls: "每日安裝",
+      Created: "創建日期",
+      Updated: "更新日期",
+      Rating: "評分",
+      LoadingScripts: "正在載入腳本...",
+      LoadMore: "載入更多",
+      Retry: "重試",
+      AllScriptsLoaded: "所有腳本已載入",
+      SearchPlaceholder: "搜尋腳本...",
+      ViewOnGreasyfork: "在Greasyfork查看",
+      errorMessage: "無法檢索腳本信息或該域沒有可用的腳本。",
+      NoScripts: "此網域下沒有找到腳本。",
+      LoadFailed: "載入腳本失敗",
+      TTBlocked: "此頁面阻擋了安全的 HTML 解析，請稍後再試。",
+      Loading: "載入中...",
+      Scripts: "腳本",
+      Install: "安裝",
+      Close: "關閉",
+      MenuToggle: "開啟/關閉",
+      MenuResetPos: "重設標籤位置",
+      RateLimited: "請求過多，伺服器正在限流。{n} 秒後可重試。",
+      RateLimitedDone: "現在可以重試了。",
+      SortDaily: "每日安裝",
+      SortUpdated: "最近更新",
+      SortTotal: "總安裝量",
+      SortRating: "評分最高",
+    },
+    ja: {
+      Author: "著者",
+      Installs: "インストール数",
+      DailyInstalls: "日次インストール数",
+      Created: "作成日",
+      Updated: "更新日",
+      Rating: "評価",
+      LoadingScripts: "スクリプトを読み込んでいます...",
+      LoadMore: "もっと読む",
+      Retry: "再試行",
+      AllScriptsLoaded: "すべてのスクリプトが読み込まれました",
+      SearchPlaceholder: "スクリプトを検索...",
+      ViewOnGreasyfork: "Greasyforkで見る",
+      errorMessage:
+        "スクリプト情報の取得に失敗するか、またはこのドメインには利用可能なスクリプトがありません。",
+      NoScripts: "このドメインのスクリプトは見つかりませんでした。",
+      LoadFailed: "スクリプトの読み込みに失敗しました",
+      TTBlocked:
+        "このページは安全な HTML 解析をブロックしています。後でもう一度お試しください。",
+      Loading: "読み込み中...",
+      Scripts: "スクリプト",
+      Install: "インストール",
+      Close: "閉じる",
+      MenuToggle: "開く/閉じる",
+      MenuResetPos: "タブ位置をリセット",
+      RateLimited: "リクエストが多すぎます。サーバーが制限中です。{n}秒後に再試行できます。",
+      RateLimitedDone: "再試行できます。",
+      SortDaily: "日次インストール",
+      SortUpdated: "最近更新",
+      SortTotal: "総インストール",
+      SortRating: "高評価",
+    },
+    vi: {
+      Author: "Tác giả",
+      Installs: "Số lượt cài đặt",
+      DailyInstalls: "Cài đặt hàng ngày",
+      Created: "Ngày tạo",
+      Updated: "Ngày cập nhật",
+      Rating: "Đánh giá",
+      LoadingScripts: "Đang tải các tập lệnh...",
+      LoadMore: "Tải thêm",
+      Retry: "Thử lại",
+      AllScriptsLoaded: "Đã tải tất cả các tập lệnh",
+      SearchPlaceholder: "Tìm kiếm tập lệnh...",
+      ViewOnGreasyfork: "Xem trên Greasyfork",
+      errorMessage:
+        "Không thể truy xuất thông tin tập lệnh hoặc không có tập lệnh nào có sẵn cho miền này.",
+      NoScripts: "Không tìm thấy tập lệnh nào cho miền này.",
+      LoadFailed: "Không tải được tập lệnh",
+      TTBlocked:
+        "Trang này chặn phân tích HTML an toàn, vui lòng thử lại sau.",
+      Loading: "Đang tải...",
+      Scripts: "Tập lệnh",
+      Install: "Cài đặt",
+      Close: "Đóng",
+      MenuToggle: "Mở/Đóng",
+      MenuResetPos: "Xoá cache vị trí tab",
+      RateLimited: "Máy chủ đang giới hạn tốc độ. Thử lại sau {n} giây.",
+      RateLimitedDone: "Bạn có thể thử lại ngay.",
+      SortDaily: "Cài đặt hàng ngày",
+      SortUpdated: "Mới cập nhật",
+      SortTotal: "Tổng lượt cài",
+      SortRating: "Đánh giá cao",
+    },
+  };
+  const FALLBACK = translations["en,en-GB"];
+ 
+  function getTranslations(lang) {
+    const norm = String(lang || "en").toLowerCase();
+    const base = norm.split("-")[0];
+    let baseMatch = null;
+    for (const key in translations) {
+      const codes = key.toLowerCase().split(",");
+      if (codes.includes(norm)) return translations[key];
+      if (!baseMatch && codes.includes(base)) baseMatch = translations[key];
+    }
+    return baseMatch || FALLBACK;
+  }
+ 
+  // ---------- Bootstrap ----------
+  function bootstrap() {
+    try {
+      init();
+    } catch (e) {
+      console.error("[Script Finder+] init error", e);
+    }
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", bootstrap, { once: true });
+  } else {
+    setTimeout(bootstrap, 0);
+  }
+ 
+  function init() {
+    const userLang =
+      (navigator.languages && navigator.languages[0]) ||
+      navigator.language ||
+      "en";
+    const strings = getTranslations(userLang);
+    const t = (key) => strings[key] ?? FALLBACK[key] ?? key;
+ 
+    // ---------- Domain ----------
+    function getSiteDomain(hostname) {
+      if (/^[\d.]+$/.test(hostname) || hostname.includes(":")) return hostname;
+      const parts = hostname.split(".");
+      if (parts.length <= 2) return hostname;
+      const sld = new Set([
+        "co", "com", "net", "org", "gov", "edu", "ac", "or", "ne", "go",
+      ]);
+      const last = parts[parts.length - 1];
+      const n = last.length === 2 && sld.has(parts[parts.length - 2]) ? 3 : 2;
+      return parts.slice(-n).join(".");
+    }
+    const domain = getSiteDomain(window.location.hostname || "");
+    if (!domain) return;
+ 
+    // ---------- Storage ----------
+    const store = {
+      get(k, d) {
+        try {
+          return typeof GM_getValue === "function" ? GM_getValue(k, d) : d;
+        } catch (e) {
+          return d;
+        }
+      },
+      set(k, v) {
+        try {
+          if (typeof GM_setValue === "function") GM_setValue(k, v);
+        } catch (e) {
+          /* ignore */
+        }
+      },
+    };
+ 
+    // ---------- Services ----------
+    const SERVICES = {
+      greasyfork: { name: "Greasyfork", base: "https://greasyfork.org" },
+      sleazyfork: { name: "SleazyFork", base: "https://sleazyfork.org" },
+    };
+    let serviceKey = store.get("sf_service", "greasyfork");
+    if (!SERVICES[serviceKey]) serviceKey = "greasyfork";
+    const svc = () => SERVICES[serviceKey];
+    const PAGE_SIZE = 50;
+ 
+    // ---------- Formatting / safety helpers ----------
+    let nf = null;
+    try {
+      nf = new Intl.NumberFormat();
+    } catch (e) {
+      nf = null;
+    }
+    const fmtNum = (v) => {
+      if (v === null || v === undefined || v === "") return "–";
+      const n = Number(v);
+      if (!Number.isFinite(n)) return "–";
+      return nf ? nf.format(n) : n.toLocaleString();
+    };
+    const fmtDate = (v) => {
+      if (!v) return "–";
+      const s = String(v).slice(0, 10);
+      return /^\d{4}-\d{2}-\d{2}$/.test(s) ? s : "–";
+    };
+    const fmtRating = (v) => {
+      if (v === null || v === undefined || v === "") return "–";
+      const n = Number(v);
+      return Number.isFinite(n) ? String(Math.round(n * 10) / 10) : "–";
+    };
+    const HOST_OK = /(^|\.)(greasyfork|sleazyfork)\.org$/i;
+    function safeUrl(u, fallback) {
+      try {
+        const x = new URL(String(u), svc().base);
+        if (x.protocol === "https:" && HOST_OK.test(x.hostname)) return x.href;
+      } catch (e) {
+        /* fall through */
+      }
+      return fallback;
+    }
+    const isId = (v) => /^\d+$/.test(String(v));
+ 
+    // ---------- Trusted Types ----------
+    let ttPolicy = null;
+    try {
+      if (window.trustedTypes && window.trustedTypes.createPolicy) {
+        ttPolicy = window.trustedTypes.createPolicy("sf-policy", {
+          createHTML: (s) => s,
+        });
+      }
+    } catch (e) {
+      ttPolicy = null;
+    }
+    const toTrustedHTML = (s) => (ttPolicy ? ttPolicy.createHTML(s) : s);
+ 
+    // ---------- State ----------
+    let page = 0;
+    let hasMore = true;
+    let loading = false;
+    let isOpen = false;
+    let gen = 0;
+    const seen = new Set();
+    let queryTerm = ""; // server-side search term currently applied ("" = plain by-site list)
+    let pendingReplace = false; // clear the list only when the first page of a new query arrives
+    const SORTS = [
+      ["", "SortDaily"],
+      ["updated", "SortUpdated"],
+      ["total-installs", "SortTotal"],
+      ["ratings", "SortRating"],
+    ];
+    let sortKey = String(store.get("sf_sort", ""));
+    if (!SORTS.some(([k]) => k === sortKey)) sortKey = "";
+    const CACHE_TTL = 5 * 60 * 1000;
+    const cache = new Map();
+    let lastReq = 0;
+    let cooldownUntil = 0;
+    let cdTimer = 0;
+    let topPct = Number(store.get("sf_top", 70)) || 70;
+ 
+    // ---------- CSS ----------
+    const CSS = `
+    :host {
+        all: initial;
+        --bg: #ffffff; --fg: #0a0a0a; --muted: #737373; --border: #e5e5e5;
+        --card: #fafafa; --hover: #f4f4f5; --accent: #2563eb; --accent-fg: #ffffff;
+        --primary: #18181b; --primary-fg: #fafafa; --ok: #16a34a;
+        --ring: rgba(37, 99, 235, .35); --scrim: rgba(10, 10, 10, .35);
+        --shadow: 0 1px 2px rgba(0,0,0,.04), 0 8px 24px rgba(0,0,0,.12), 0 24px 64px rgba(0,0,0,.14);
+        --radius: 14px;
+    }
+    @media (prefers-color-scheme: dark) {
+        :host {
+            --bg: #09090b; --fg: #fafafa; --muted: #a1a1aa; --border: #27272a;
+            --card: #111113; --hover: #18181b; --accent: #60a5fa; --accent-fg: #0a0a0a;
+            --primary: #fafafa; --primary-fg: #18181b; --ok: #22c55e;
+            --ring: rgba(96, 165, 250, .4); --scrim: rgba(0, 0, 0, .55);
+            --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.5), 0 24px 64px rgba(0,0,0,.5);
+        }
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    .tab, .panel, .scrim { font: 14px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
+    button { font: inherit; color: inherit; }
+ 
+    /* ---- Floating tab ---- */
+    .tab {
+        position: fixed; right: 0; top: 70%;
+        transform: translate(calc(100% - 34px), -50%);
+        display: flex; align-items: center; gap: 8px;
+        height: 42px; padding: 0 14px 0 8px; margin: 0;
+        border: 1px solid var(--border); border-right: 0; border-radius: 21px 0 0 21px;
+        background: color-mix(in srgb, var(--bg) 82%, transparent);
+        -webkit-backdrop-filter: saturate(180%) blur(14px); backdrop-filter: saturate(180%) blur(14px);
+        color: var(--fg); font-weight: 600; font-size: 13px; white-space: nowrap; cursor: pointer;
+        opacity: .85; box-shadow: var(--shadow);
+        transition: transform .28s cubic-bezier(.2,.8,.2,1), opacity .2s ease;
+        touch-action: none; user-select: none; -webkit-user-select: none;
+        z-index: 2147483646;
+    }
+    .tab svg { flex: none; margin-left: 4px; color: var(--accent); }
+    .tab:hover, .tab:focus-visible, .tab.dragging, .tab[aria-expanded="true"] { transform: translate(0, -50%); opacity: 1; }
+    .tab:focus-visible { outline: 2px solid var(--accent); outline-offset: -3px; }
+    .tab.dragging { cursor: grabbing; transition: opacity .2s ease; }
+    .badge {
+        min-width: 22px; height: 20px; padding: 0 7px; border-radius: 999px;
+        background: var(--accent); color: var(--accent-fg);
+        font-size: 11px; font-weight: 700; line-height: 20px; text-align: center;
+    }
+ 
+    /* ---- Scrim + panel ---- */
+    .scrim {
+        position: fixed; inset: 0; background: var(--scrim);
+        -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+        opacity: 0; visibility: hidden; pointer-events: none;
+        transition: opacity .2s ease, visibility .2s;
+        z-index: 2147483646;
+    }
+    .scrim.open { opacity: 1; visibility: visible; pointer-events: auto; }
+    .panel {
+        position: fixed; top: 50%; left: 50%;
+        width: min(700px, calc(100vw - 24px)); max-height: min(78vh, 760px);
+        display: flex; flex-direction: column; overflow: hidden;
+        background: var(--bg); color: var(--fg);
+        border: 1px solid var(--border); border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        opacity: 0; visibility: hidden; pointer-events: none;
+        transform: translate(-50%, -47%) scale(.97);
+        transition: opacity .2s ease, transform .25s cubic-bezier(.2,.8,.2,1), visibility .2s;
+        z-index: 2147483647; outline: none;
+    }
+    .panel.open { opacity: 1; visibility: visible; pointer-events: auto; transform: translate(-50%, -50%) scale(1); }
+ 
+    header { padding: 16px 16px 12px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 12px; }
+    .title-row { display: flex; align-items: center; gap: 8px; min-width: 0; }
+    h2 { margin: 0; font-size: 16px; font-weight: 650; letter-spacing: -.01em; }
+    .count { background: var(--hover); color: var(--fg); border: 1px solid var(--border); border-radius: 999px; padding: 1px 8px; font-size: 12px; font-weight: 600; }
+    .domain { color: var(--muted); font-size: 12px; background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 1px 7px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+    .close {
+        margin-left: auto; display: grid; place-items: center; width: 30px; height: 30px;
+        border: 0; background: transparent; color: var(--muted); font-size: 15px; line-height: 1;
+        border-radius: 8px; cursor: pointer; transition: background .15s, color .15s;
+    }
+    .close:hover { background: var(--hover); color: var(--fg); }
+ 
+    .toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .seg { display: inline-flex; padding: 3px; gap: 2px; background: var(--hover); border: 1px solid var(--border); border-radius: 10px; }
+    .seg-btn { border: 0; background: transparent; color: var(--muted); padding: 5px 12px; border-radius: 7px; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: background .15s, color .15s, box-shadow .15s; }
+    .seg-btn:hover { color: var(--fg); }
+    .seg-btn[aria-pressed="true"] { background: var(--bg); color: var(--fg); box-shadow: 0 1px 2px rgba(0,0,0,.12), 0 0 0 1px var(--border); }
+    .gf { margin-left: auto; }
+ 
+    .btn {
+        display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+        border: 1px solid transparent; border-radius: 9px; padding: 7px 14px;
+        background: var(--primary); color: var(--primary-fg); font-size: 13px; font-weight: 600; cursor: pointer;
+        transition: opacity .15s, background .15s, transform .1s;
+    }
+    .btn:hover { opacity: .88; }
+    .btn:active { transform: scale(.98); }
+    .btn.ghost { background: transparent; color: var(--fg); border-color: var(--border); }
+    .btn.ghost:hover { background: var(--hover); opacity: 1; }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+    .btn:focus-visible, .seg-btn:focus-visible, .close:focus-visible, .install:focus-visible, .name:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+ 
+    .search {
+        width: 100%; padding: 9px 12px 9px 36px; font: inherit; color: var(--fg);
+        background: var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M21 21l-4.3-4.3'/%3E%3C/svg%3E") no-repeat 12px center;
+        border: 1px solid var(--border); border-radius: 10px; outline: none;
+        transition: border-color .15s, box-shadow .15s;
+    }
+    .search::placeholder { color: var(--muted); }
+    .search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--ring); }
+ 
+    .sel { font: inherit; font-size: 12.5px; font-weight: 600; color: var(--fg); background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 7px 8px; cursor: pointer; max-width: 160px; }
+    .sel:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+ 
+    /* ---- List ---- */
+    .list { list-style: none; margin: 0; padding: 14px 16px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 10px; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+    .list:empty { display: none; }
+    .item { border: 1px solid var(--border); background: var(--card); border-radius: 12px; padding: 12px 14px; transition: border-color .15s, box-shadow .15s, background .15s; }
+    .item:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); background: var(--bg); box-shadow: 0 2px 10px rgba(0,0,0,.06); }
+    .name { font-size: 15px; font-weight: 650; color: var(--fg); text-decoration: none; letter-spacing: -.01em; }
+    .name:hover { color: var(--accent); }
+    .desc { margin: 4px 0 10px; color: var(--muted); font-size: 13px; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .meta { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+    .meta div { display: inline-flex; align-items: baseline; gap: 6px; border: 1px solid var(--border); border-radius: 999px; padding: 2px 10px; background: var(--bg); }
+    .meta small { color: var(--muted); font-size: 11px; }
+    .meta b { font-size: 12px; font-weight: 600; overflow-wrap: anywhere; }
+    .install { display: inline-flex; align-items: center; background: var(--ok); color: #fff; padding: 6px 14px; border-radius: 9px; text-decoration: none; font-size: 13px; font-weight: 600; transition: filter .15s, transform .1s; }
+    .install:hover { filter: brightness(1.08); }
+    .install:active { transform: scale(.98); }
+ 
+    /* ---- Skeleton ---- */
+    .skeletons { padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+    .sk { height: 92px; border-radius: 12px; background: linear-gradient(90deg, var(--card) 25%, var(--hover) 50%, var(--card) 75%); background-size: 200% 100%; border: 1px solid var(--border); animation: shimmer 1.3s linear infinite; }
+    @keyframes shimmer { to { background-position: -200% 0; } }
+ 
+    footer { padding: 12px 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    footer:has(.status:empty):has(.more[hidden]) { display: none; }
+    .status { margin: 0; color: var(--muted); font-size: 13px; text-align: center; overflow-wrap: anywhere; }
+    .status:empty { display: none; }
+    .status.loading { animation: blink 1.2s ease-in-out infinite; }
+    @keyframes blink { 0%, 100% { opacity: .4; } 50% { opacity: 1; } }
+ 
+    @media (max-width: 600px) {
+        .panel { top: auto; bottom: 0; left: 0; width: 100%; max-height: 88vh; border-radius: var(--radius) var(--radius) 0 0; transform: translateY(16px); }
+        .panel.open { transform: none; }
+        .gf { font-size: 12px; padding: 6px 10px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .tab, .panel, .scrim, .item, .btn, .install { transition: none; }
+        .status.loading, .sk { animation: none; }
+    }`;
+ 
+    // ---------- DOM (no innerHTML anywhere) ----------
+    const host = document.createElement("div");
+    host.id = "sf-host";
+    const shadow = host.attachShadow({ mode: "open" });
+    const el = (tag, props = {}, ...kids) => {
+      const n = document.createElement(tag);
+      for (const [k, v] of Object.entries(props)) {
+        if (k === "class") n.className = v;
+        else if (k === "text") n.textContent = v;
+        else n.setAttribute(k, v);
+      }
+      n.append(...kids);
+      return n;
+    };
+    const SVG_NS = "http://www.w3.org/2000/svg";
+    const icon = document.createElementNS(SVG_NS, "svg");
+    for (const [k, v] of Object.entries({
+      viewBox: "0 0 24 24",
+      width: "20",
+      height: "20",
+      fill: "none",
+      stroke: "currentColor",
+      "stroke-width": "2",
+      "stroke-linecap": "round",
+      "stroke-linejoin": "round",
+      "aria-hidden": "true",
+    }))
+      icon.setAttribute(k, v);
+    const iconPath = document.createElementNS(SVG_NS, "path");
+    iconPath.setAttribute("d", "M8 7l-5 5 5 5M16 7l5 5-5 5M14 4l-4 16");
+    icon.appendChild(iconPath);
+ 
+    const styleEl = document.createElement("style");
+    styleEl.textContent = CSS;
+ 
+    const segBtns = {};
+    const seg = el("div", { class: "seg", role: "group", "aria-label": "Service" });
+    for (const [key, sv] of Object.entries(SERVICES)) {
+      const bt = el("button", {
+        type: "button",
+        class: "seg-btn",
+        "data-svc": key,
+        text: sv.name,
+      });
+      segBtns[key] = bt;
+      seg.appendChild(bt);
+    }
+    const syncSeg = () => {
+      for (const k in segBtns)
+        segBtns[k].setAttribute("aria-pressed", String(k === serviceKey));
+    };
+    syncSeg();
+ 
+    const sortSel = el("select", { class: "sel", "aria-label": "Sort" });
+    for (const [val, lbl] of SORTS) {
+      const o = el("option", { value: val, text: t(lbl) });
+      if (val === sortKey) o.selected = true;
+      sortSel.appendChild(o);
+    }
+ 
+    shadow.append(
+      styleEl,
+      el("div", { class: "scrim" }),
+      el(
+        "button",
+        {
+          class: "tab",
+          type: "button",
+          "aria-haspopup": "dialog",
+          "aria-expanded": "false",
+        },
+        icon,
+        el("span", { class: "tab-label" }),
+        el("span", { class: "badge", hidden: "" }),
+      ),
+      el(
+        "section",
+        {
+          class: "panel",
+          role: "dialog",
+          "aria-label": "Script Finder",
+          tabindex: "-1",
+        },
+        el(
+          "header",
+          {},
+          el(
+            "div",
+            { class: "title-row" },
+            el("h2", { text: "Script Finder" }),
+            el("span", { class: "count", hidden: "" }),
+            el("span", { class: "domain", text: domain, title: domain }),
+            el("button", { class: "close", type: "button", text: "✕" }),
+          ),
+          el(
+            "div",
+            { class: "toolbar" },
+            seg,
+            sortSel,
+            el("button", { class: "btn ghost gf", type: "button" }),
+          ),
+          el("input", {
+            class: "search",
+            type: "search",
+            autocomplete: "off",
+            spellcheck: "false",
+          }),
+        ),
+        el("ul", { class: "list" }),
+        el(
+          "div",
+          { class: "skeletons", hidden: "" },
+          el("div", { class: "sk" }),
+          el("div", { class: "sk" }),
+          el("div", { class: "sk" }),
+        ),
+        el(
+          "footer",
+          {},
+          el("p", { class: "status", role: "status", "aria-live": "polite" }),
+          el("button", { class: "btn more", type: "button", hidden: "" }),
+        ),
+      ),
+    );
+ 
+    const $ = (sel) => shadow.querySelector(sel);
+    const tab = $(".tab"),
+      badge = $(".badge"),
+      panel = $(".panel");
+    const count = $(".count"),
+      gfBtn = $(".gf"),
+      closeBtn = $(".close");
+    const search = $(".search"),
+      list = $(".list"),
+      status = $(".status"),
+      more = $(".more"),
+      skel = $(".skeletons"),
+      scrim = $(".scrim");
+ 
+    const refreshLabels = () => {
+      $(".tab-label").textContent = t("Scripts");
+      tab.setAttribute("aria-label", "Script Finder – " + t("Scripts"));
+      gfBtn.textContent = t("ViewOnGreasyfork").replace(
+        "Greasyfork",
+        svc().name,
+      );
+      closeBtn.setAttribute("aria-label", t("Close"));
+      closeBtn.title = t("Close");
+      search.placeholder = t("SearchPlaceholder");
+      more.textContent = t("LoadMore");
+    };
+    refreshLabels();
+ 
+    // ---------- Rendering ----------
+    function renderItem(s) {
+      const base = svc().base;
+      const li = document.createElement("li");
+      li.className = "item";
+      li._q = `${s.name} ${s.description} ${s.author}`.toLowerCase();
+ 
+      const a = document.createElement("a");
+      a.className = "name";
+      a.textContent = s.name || "—";
+      const href = safeUrl(s.url, `${base}/scripts/${s.id}`);
+      if (href) {
+        a.setAttribute("href", href);
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+      }
+ 
+      const p = document.createElement("p");
+      p.className = "desc";
+      p.textContent = s.description;
+ 
+      const meta = document.createElement("div");
+      meta.className = "meta";
+      const rows = [
+        [t("Author"), s.author || "–"],
+        [t("Installs"), fmtNum(s.installs)],
+        [t("DailyInstalls"), fmtNum(s.dailyInstalls)],
+        [t("Created"), fmtDate(s.createDate)],
+        [t("Updated"), fmtDate(s.updateDate)],
+        [t("Rating"), fmtRating(s.ratingScore)],
+      ];
+      for (const [k, v] of rows) {
+        const box = document.createElement("div");
+        const small = document.createElement("small");
+        small.textContent = k;
+        const b = document.createElement("b");
+        b.textContent = v;
+        box.append(small, b);
+        meta.appendChild(box);
+      }
+ 
+      const install = document.createElement("a");
+      install.className = "install";
+      install.textContent = `${t("Install")} ${s.version || ""}`.trim();
+      const ih = safeUrl(
+        `${base}/scripts/${s.id}/code/script.user.js`,
+        "",
+      );
+      if (ih) install.setAttribute("href", ih);
+ 
+      li.append(a, p, meta, install);
+      return li;
+    }
+ 
+    function updateCounts() {
+      const items = [...list.children];
+      const total = items.length;
+      const shown = items.filter((li) => !li.hidden).length;
+      count.textContent = shown === total ? String(total) : `${shown}/${total}`;
+      count.hidden = !total;
+      badge.textContent = total + (hasMore ? "+" : "");
+      badge.hidden = !total;
+    }
+ 
+    function applyFilter() {
+      const raw = search.value.trim();
+      const q = raw.toLowerCase();
+      // Results that came from the server for this exact term are already filtered.
+      const useLocal = !!q && raw !== queryTerm;
+      for (const li of list.children) li.hidden = useLocal && !li._q.includes(q);
+      updateCounts();
+    }
+ 
+    function setStatus(text, isLoading = false) {
+      status.textContent = text;
+      status.classList.toggle("loading", !!isLoading);
+    }
+ 
+    // ---------- Network ----------
+    function gmGet(url, headers) {
+      return new Promise((resolve, reject) => {
+        let done = false;
+        const ok = (v) => {
+          if (!done) {
+            done = true;
+            resolve(v);
+          }
+        };
+        const ko = (kind) => {
+          if (!done) {
+            done = true;
+            const e = new Error(kind);
+            e.kind = kind;
+            reject(e);
+          }
+        };
+        if (typeof GM_xmlhttpRequest !== "function") return ko("no-gm-xhr");
+        try {
+          GM_xmlhttpRequest({
+            method: "GET",
+            url,
+            headers: headers || {},
+            timeout: 20000,
+            onload: (r) =>
+              ok({
+                status: r.status,
+                text: String(r.responseText || ""),
+                headers: String(r.responseHeaders || ""),
+              }),
+            onerror: () => ko("network-error"),
+            ontimeout: () => ko("timeout"),
+            onabort: () => ko("aborted"),
+          });
+        } catch (e) {
+          ko("exception");
+        }
+      });
+    }
+ 
+    function logHttp(label, url, r) {
+      console.warn(
+        `[Script Finder+] ${label} HTTP ${r.status}`,
+        url,
+        "\nheaders:",
+        r.headers.slice(0, 400),
+        "\nbody:",
+        r.text.slice(0, 300),
+      );
+    }
+ 
+    function extractList(text) {
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        return null;
+      }
+      if (Array.isArray(data)) return data;
+      if (data && Array.isArray(data.execute)) return data.execute;
+      if (data && Array.isArray(data.scripts)) return data.scripts;
+      return null;
+    }
+ 
+    function mapJson(j) {
+      const id = String(j && j.id);
+      if (!isId(id)) return null;
+      return {
+        id,
+        name: String(j.name || ""),
+        author:
+          (j.users && j.users[0] && j.users[0].name
+            ? String(j.users[0].name)
+            : "") || "–",
+        description: String(j.description || ""),
+        version: String(j.version || ""),
+        url: j.url,
+        createDate: j.created_at,
+        updateDate: j.code_updated_at,
+        installs: j.total_installs,
+        dailyInstalls: j.daily_installs,
+        ratingScore: j.fan_score,
+      };
+    }
+ 
+    function relevantToDomain(j) {
+      if (!Array.isArray(j.domains)) return true;
+      return j.domains.some((x) => {
+        const d = String(x).replace(/^\*\./, "").toLowerCase();
+        return d === domain || d.endsWith("." + domain) || domain.endsWith("." + d);
+      });
+    }
+ 
+    function parseHtmlList(text) {
+      let doc;
+      try {
+        doc = new DOMParser().parseFromString(toTrustedHTML(text), "text/html");
+      } catch (e) {
+        const err = new Error("trusted-types");
+        err.tt = true;
+        throw err;
+      }
+      const nodes = doc.querySelectorAll("#browse-script-list [data-script-id]");
+      if (!nodes.length) {
+        const probe =
+          (doc.title || "") +
+          " " +
+          (doc.body ? doc.body.textContent.slice(0, 500) : "");
+        if (/just a moment|attention required|enable javascript and cookies|captcha/i.test(probe))
+          throw new Error("challenge-page");
+        return { items: [], hasMore: false };
+      }
+      const items = [];
+      nodes.forEach((n) => {
+        const get = (a) => n.getAttribute(a);
+        const id = get("data-script-id");
+        if (!isId(id)) return;
+        const rating = get("data-script-rating-score");
+        items.push({
+          id,
+          name: get("data-script-name") || "",
+          author:
+            (n.querySelector("dd.script-list-author") &&
+              n.querySelector("dd.script-list-author").textContent.trim()) ||
+            "–",
+          description:
+            (n.querySelector(".script-description") &&
+              n.querySelector(".script-description").textContent.trim()) ||
+            "",
+          version: get("data-script-version") || "",
+          url: `${svc().base}/scripts/${id}`,
+          createDate: get("data-script-created-date"),
+          updateDate: get("data-script-updated-date"),
+          installs: get("data-script-total-installs"),
+          dailyInstalls: get("data-script-daily-installs"),
+          ratingScore: rating,
+        });
+      });
+      const next = doc.querySelector(".next_page");
+      const more_ =
+        !!next &&
+        next.getAttribute("aria-disabled") !== "true" &&
+        !next.classList.contains("disabled");
+      return { items, hasMore: more_ };
+    }
+ 
+    // Space requests out (the site has a per-IP rate limiter).
+    async function pgGet(url, headers) {
+      const wait = lastReq + 700 - Date.now();
+      if (wait > 0) await new Promise((r) => setTimeout(r, wait));
+      lastReq = Date.now();
+      return gmGet(url, headers);
+    }
+    function retryAfter(h) {
+      const m = /retry-after:\s*(\d+)/i.exec(h || "");
+      const n = m ? Number(m[1]) : 30;
+      return Math.min(300, Math.max(5, n || 30));
+    }
+    function rateError(r) {
+      const e = new Error(`rate-limited (HTTP ${r.status})`);
+      e.rate = retryAfter(r.headers);
+      return e;
+    }
+ 
+    async function fetchPage(n) {
+      const key = [serviceKey, domain, sortKey, queryTerm, n].join("|");
+      const hit = cache.get(key);
+      if (hit && Date.now() - hit.t < CACHE_TTL) return hit.v;
+      const v = await fetchPageNet(n);
+      cache.set(key, { t: Date.now(), v });
+      return v;
+    }
+ 
+    // By-site JSON first. Fallbacks (search JSON / HTML) are only used for the plain first page,
+    // because they cannot take our query/sort and would just burn more rate-limited requests.
+    async function fetchPageNet(n) {
+      if (Date.now() < cooldownUntil) {
+        const e = new Error("cooldown");
+        e.rate = Math.ceil((cooldownUntil - Date.now()) / 1000);
+        throw e;
+      }
+      const base = svc().base;
+      const enc = encodeURIComponent(domain);
+      const errors = [];
+      let ttHit = false;
+      const plain = n === 1 && !queryTerm && !sortKey;
+ 
+      const params = [];
+      if (n > 1) params.push(`page=${n}`);
+      if (queryTerm) params.push(`q=${encodeURIComponent(queryTerm)}`);
+      if (sortKey) params.push(`sort=${encodeURIComponent(sortKey)}`);
+      const qs = params.length ? `?${params.join("&")}` : "";
+ 
+      // 1) by-site JSON
+      {
+        const url = `${base}/scripts/by-site/${enc}.json${qs}`;
+        try {
+          let r = await pgGet(url, { Accept: "application/json" });
+          if (r.status === 403 && plain)
+            r = await pgGet(url, {
+              Accept: "application/json",
+              Referer: base + "/",
+            });
+          if (r.status === 429 || (r.status === 403 && !plain)) {
+            logHttp("by-site JSON", url, r);
+            throw rateError(r);
+          }
+          if (r.status === 200) {
+            const arr = extractList(r.text);
+            if (arr) {
+              return {
+                items: arr.map(mapJson).filter(Boolean),
+                hasMore: arr.length >= PAGE_SIZE,
+              };
+            }
+            errors.push("by-site JSON: invalid JSON");
+            console.warn("[Script Finder+] by-site not JSON:", r.text.slice(0, 200));
+          } else if (r.status === 404) {
+            return { items: [], hasMore: false };
+          } else {
+            errors.push(`by-site JSON: HTTP ${r.status}`);
+            logHttp("by-site JSON", url, r);
+          }
+        } catch (e) {
+          if (e.rate) throw e;
+          errors.push(`by-site JSON: ${e.kind || e.message}`);
+        }
+      }
+ 
+      if (plain) {
+        // 2) search JSON
+        {
+          const url = `${base}/scripts.json?q=${enc}&sort=updated`;
+          try {
+            const r = await pgGet(url, { Accept: "application/json" });
+            if (r.status === 200) {
+              const arr = extractList(r.text);
+              if (arr) {
+                return {
+                  items: arr.filter(relevantToDomain).map(mapJson).filter(Boolean),
+                  hasMore: arr.length >= PAGE_SIZE,
+                };
+              }
+              errors.push("search JSON: invalid JSON");
+            } else {
+              errors.push(`search JSON: HTTP ${r.status}`);
+              logHttp("search JSON", url, r);
+            }
+          } catch (e) {
+            errors.push(`search JSON: ${e.kind || e.message}`);
+          }
+        }
+ 
+        // 3) by-site HTML
+        {
+          const url = `${base}/scripts/by-site/${enc}`;
+          try {
+            const r = await pgGet(url, {
+              Accept: "text/html",
+              Referer: base + "/",
+            });
+            if (r.status === 200) {
+              return parseHtmlList(r.text);
+            } else if (r.status === 404) {
+              return { items: [], hasMore: false };
+            } else {
+              errors.push(`HTML: HTTP ${r.status}`);
+              logHttp("HTML", url, r);
+            }
+          } catch (e) {
+            if (e.tt) ttHit = true;
+            errors.push(`HTML: ${e.kind || e.message}`);
+          }
+        }
+      }
+ 
+      const err = new Error(errors.join("; "));
+      err.tt = ttHit;
+      throw err;
+    }
+ 
+    function stopCooldown() {
+      clearInterval(cdTimer);
+      cdTimer = 0;
+    }
+    function startCooldown(sec) {
+      stopCooldown();
+      cooldownUntil = Math.max(cooldownUntil, Date.now() + sec * 1000);
+      more.textContent = t("Retry");
+      more.hidden = false;
+      more.disabled = true;
+      const tick = () => {
+        const left = Math.ceil((cooldownUntil - Date.now()) / 1000);
+        if (left <= 0) {
+          stopCooldown();
+          more.disabled = false;
+          setStatus(t("RateLimitedDone"));
+          return;
+        }
+        setStatus(t("RateLimited").replace("{n}", String(left)));
+      };
+      tick();
+      cdTimer = setInterval(tick, 1000);
+    }
+ 
+    async function loadPage() {
+      if (loading || !hasMore) return;
+      loading = true;
+      const myGen = gen;
+      stopCooldown();
+      more.hidden = true;
+      more.disabled = true;
+      setStatus(list.children.length ? t("Loading") : t("LoadingScripts"), true);
+      skel.hidden = !!list.children.length;
+      try {
+        const res = await fetchPage(page + 1);
+        if (myGen !== gen) return;
+        if (pendingReplace && page === 0) {
+          list.textContent = "";
+          seen.clear();
+          pendingReplace = false;
+        }
+        const frag = document.createDocumentFragment();
+        for (const s of res.items) {
+          if (seen.has(s.id)) continue;
+          seen.add(s.id);
+          frag.appendChild(renderItem(s));
+        }
+        list.appendChild(frag);
+        page++;
+        hasMore = !!res.hasMore;
+        if (!list.children.length) {
+          hasMore = false;
+          setStatus(t("NoScripts"));
+        } else {
+          setStatus(hasMore ? "" : t("AllScriptsLoaded"));
+        }
+        more.textContent = t("LoadMore");
+        more.hidden = !hasMore;
+        more.disabled = false;
+      } catch (e) {
+        if (myGen !== gen) return;
+        console.warn("[Script Finder+] load failed:", e);
+        if (e && e.rate) {
+          startCooldown(e.rate);
+        } else {
+          const detail = String((e && e.message) || "").slice(0, 160);
+          setStatus(
+            `${e && e.tt ? t("TTBlocked") : t("LoadFailed")}${detail ? ` (${detail})` : ""}`,
+          );
+          more.textContent = t("Retry");
+          more.hidden = false;
+          more.disabled = false;
+        }
+      } finally {
+        if (myGen === gen) {
+          loading = false;
+          skel.hidden = true;
+        }
+        applyFilter();
+      }
+    }
+ 
+    function resetList() {
+      gen++;
+      loading = false;
+      stopCooldown();
+      page = 0;
+      hasMore = true;
+      pendingReplace = false;
+      seen.clear();
+      list.textContent = "";
+      skel.hidden = true;
+      setStatus("");
+      more.hidden = true;
+      updateCounts();
+    }
+ 
+    // New server-side query / sort: keep the current list on screen until the new first page arrives.
+    function startQuery(term) {
+      gen++;
+      loading = false;
+      stopCooldown();
+      queryTerm = term;
+      page = 0;
+      hasMore = true;
+      pendingReplace = true;
+      more.hidden = true;
+      skel.hidden = true;
+      setStatus("");
+      if (isOpen) loadPage();
+    }
+ 
+    // ---------- Open / close ----------
+    function setOpen(v) {
+      isOpen = !!v;
+      panel.classList.toggle("open", isOpen);
+      scrim.classList.toggle("open", isOpen);
+      tab.setAttribute("aria-expanded", String(isOpen));
+      if (isOpen) {
+        if (page === 0 && !loading && hasMore) loadPage();
+        setTimeout(() => {
+          try {
+            if (matchMedia("(pointer: fine)").matches)
+              search.focus({ preventScroll: true });
+            else panel.focus({ preventScroll: true });
+          } catch (e) {
+            /* ignore */
+          }
+        }, 60);
+      }
+    }
+    const toggle = () => setOpen(!isOpen);
+ 
+    // ---------- Draggable tab ----------
+    function setTop(pct) {
+      topPct = Math.min(92, Math.max(8, Number(pct) || 70));
+      tab.style.top = topPct + "%";
+    }
+    setTop(topPct);
+ 
+    let drag = null;
+    tab.addEventListener("pointerdown", (e) => {
+      if (e.button !== 0) return;
+      drag = { startY: e.clientY, moved: false };
+      try {
+        tab.setPointerCapture(e.pointerId);
+      } catch (err) {
+        /* ignore */
+      }
+    });
+    tab.addEventListener("pointermove", (e) => {
+      if (!drag) return;
+      if (!drag.moved && Math.abs(e.clientY - drag.startY) < 5) return;
+      drag.moved = true;
+      tab.classList.add("dragging");
+      setTop((e.clientY / window.innerHeight) * 100);
+    });
+    tab.addEventListener("pointerup", () => {
+      if (!drag) return;
+      const moved = drag.moved;
+      drag = null;
+      tab.classList.remove("dragging");
+      if (moved) store.set("sf_top", topPct);
+      else toggle();
+    });
+    tab.addEventListener("pointercancel", () => {
+      drag = null;
+      tab.classList.remove("dragging");
+    });
+    tab.addEventListener("click", (e) => {
+      if (e.detail === 0) toggle(); // keyboard activation
+    });
+ 
+    // ---------- Events ----------
+    closeBtn.addEventListener("click", () => {
+      setOpen(false);
+      tab.focus();
+    });
+    more.addEventListener("click", loadPage);
+    scrim.addEventListener("click", () => setOpen(false));
+ 
+    let filterTimer = 0;
+    let serverTimer = 0;
+    search.addEventListener("input", () => {
+      // 1) instant local filter over what is already loaded
+      clearTimeout(filterTimer);
+      filterTimer = setTimeout(applyFilter, 120);
+      // 2) after a short pause, ask the server so scripts beyond the loaded pages can be found too
+      clearTimeout(serverTimer);
+      serverTimer = setTimeout(() => {
+        const raw = search.value.trim();
+        if (raw === queryTerm) return;
+        if (raw && raw.length < 2) return;
+        if (!queryTerm && !hasMore && page > 0) return; // everything is loaded: local filter is complete
+        startQuery(raw);
+      }, 500);
+    });
+ 
+    sortSel.addEventListener("change", () => {
+      sortKey = sortSel.value;
+      store.set("sf_sort", sortKey);
+      startQuery(queryTerm);
+    });
+ 
+    seg.addEventListener("click", (e) => {
+      const bt = e.target && e.target.closest ? e.target.closest(".seg-btn") : null;
+      if (!bt) return;
+      const key = bt.getAttribute("data-svc");
+      if (!SERVICES[key] || key === serviceKey) return;
+      serviceKey = key;
+      store.set("sf_service", serviceKey);
+      syncSeg();
+      refreshLabels();
+      resetList();
+      if (isOpen) loadPage();
+    });
+ 
+    function openTab(url) {
+      try {
+        if (typeof GM_openInTab === "function") {
+          GM_openInTab(url, { active: true, insert: true, setParent: true });
+          return;
+        }
+      } catch (e) {
+        /* fall back */
+      }
+      window.open(url, "_blank", "noopener");
+    }
+    gfBtn.addEventListener("click", () => {
+      // Only add `q` when non-empty: an empty `q=` (plus extra params) makes the site answer HTTP 400.
+      let url = `${svc().base}/scripts/by-site/${encodeURIComponent(domain)}`;
+      const q = search.value.trim();
+      if (q) url += `?q=${encodeURIComponent(q)}`;
+      openTab(url);
+    });
+ 
+    // Keep page hotkeys from firing while typing; minimal focus trap on Tab.
+    panel.addEventListener("keydown", (e) => {
+      if (e.key === "Tab") {
+        const f = [
+          ...panel.querySelectorAll(
+            "button, select, input, a[href]",
+          ),
+        ].filter((n) => !n.disabled && !n.hidden && !n.closest("[hidden]"));
+        if (f.length) {
+          const first = f[0],
+            last = f[f.length - 1];
+          const active = shadow.activeElement;
+          if (e.shiftKey && (active === first || active === panel)) {
+            e.preventDefault();
+            last.focus();
+          } else if (!e.shiftKey && active === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      }
+      e.stopPropagation();
+    });
+    for (const ev of ["keyup", "keypress"])
+      panel.addEventListener(ev, (e) => e.stopPropagation());
+ 
+    document.addEventListener(
+      "pointerdown",
+      (e) => {
+        if (isOpen && !e.composedPath().includes(host)) setOpen(false);
+      },
+      true,
+    );
+    document.addEventListener(
+      "keydown",
+      (e) => {
+        if (isOpen && e.key === "Escape") {
+          setOpen(false);
+          tab.focus();
+        }
+      },
+      true,
+    );
+    document.addEventListener("fullscreenchange", () => {
+      host.style.display = document.fullscreenElement ? "none" : "";
+    });
+ 
+    // ---------- Menu commands ----------
+    try {
+      if (typeof GM_registerMenuCommand === "function") {
+        GM_registerMenuCommand(`Script Finder+: ${t("MenuToggle")}`, toggle);
+        GM_registerMenuCommand(`Script Finder+: ${t("MenuResetPos")}`, () => {
+          store.set("sf_top", 70);
+          setTop(70);
+        });
+      }
+    } catch (e) {
+      /* ignore */
+    }
+ 
+    (document.documentElement || document.body).appendChild(host);
+  }
+})();
