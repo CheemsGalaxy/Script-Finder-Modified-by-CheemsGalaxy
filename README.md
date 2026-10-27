@@ -9,7 +9,7 @@ A community fork of [Script Finder+](https://greasyfork.org/en/scripts/498904-sc
 
 | | |
 |---|---|
-| **Version** | `2026.10.27.4` |
+| **Version** | `2026.10.27.5` |
 | **Userscript page** | [greasyfork.org/scripts/600159](https://greasyfork.org/en/scripts/600159-script-finder-modified-by-cheemsgalaxy) |
 | **Install / update URL** | [`Script_Finder_Modified_by_CheemsGalaxy.user.js`](https://raw.githubusercontent.com/CheemsGalaxy/Script-Finder-Modified-by-CheemsGalaxy/main/Script_Finder_Modified_by_CheemsGalaxy.user.js) (GitHub raw) |
 | **Mirror** | [jsDelivr](https://cdn.jsdelivr.net/gh/CheemsGalaxy/Script-Finder-Modified-by-CheemsGalaxy@main/Script_Finder_Modified_by_CheemsGalaxy.user.js) (fallback only) |

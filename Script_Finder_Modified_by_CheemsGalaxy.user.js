@@ -2,7 +2,7 @@
 // @name              Script Finder+ | Modified by: CheemsGalaxy
 // @description       Script Finder allows you to find userscripts from Greasy Fork / SleazyFork on any website.
 // @namespace         https://github.com/CheemsGalaxy
-// @version           2026.10.27.4
+// @version           2026.10.27.5
 // @author            Original: shiquda & 人民的勤务员 <china.qinwuyuan@gmail.com> | Modified by: CheemsGalaxy
 // @supportURL        https://github.com/CheemsGalaxy/Script-Finder-Modified-by-CheemsGalaxy/issues
 // @homepageURL       https://github.com/CheemsGalaxy/Script-Finder-Modified-by-CheemsGalaxy
@@ -367,7 +367,7 @@
       (typeof GM_info !== "undefined" &&
         GM_info.script &&
         GM_info.script.version) ||
-      "2026.10.27.4";
+      "2026.10.27.5";
     const UPDATE_INTERVAL = 24 * 60 * 60 * 1000;
     const STORE_UPDATE_CHECKED = "sf_update_checked";
     const STORE_UPDATE_SKIP = "sf_update_skip";
@@ -379,7 +379,7 @@
     :host {
         all: initial;
         color-scheme: light dark;
-        --bg: #ffffff; --fg: #0a0a0a; --muted: #737373; --border: #e5e5e5;
+        --bg: #ffffff; --fg: #0a0a0a; --muted: #6b6b6b; --border: #e5e5e5;
         --card: #fafafa; --hover: #f4f4f5; --accent: #2563eb; --accent-fg: #ffffff;
         --primary: #18181b; --primary-fg: #fafafa; --ok: #15803d; --ok-fg: #ffffff;
         --ring: rgba(37, 99, 235, .35); --scrim: rgba(10, 10, 10, .35);
