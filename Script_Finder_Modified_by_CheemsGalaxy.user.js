@@ -2,7 +2,7 @@
 // @name              Script Finder+ | Modified by: CheemsGalaxy
 // @description       Script Finder allows you to find userscripts from Greasy Fork / SleazyFork on any website.
 // @namespace         https://github.com/CheemsGalaxy
-// @version           2026.10.26.1
+// @version           2026.10.27.2
 // @author            Original: shiquda & 人民的勤务员 <china.qinwuyuan@gmail.com> | Modified by: CheemsGalaxy
 // @supportURL        https://github.com/CheemsGalaxy/Script-Finder-Modified-by-CheemsGalaxy/issues
 // @homepageURL       https://github.com/CheemsGalaxy/Script-Finder-Modified-by-CheemsGalaxy
@@ -10,6 +10,9 @@
 // @noframes
 // @connect           greasyfork.org
 // @connect           sleazyfork.org
+// @connect           api.greasyfork.org
+// @connect           api.sleazyfork.org
+// @connect           cdn.githubraw.com
 // @grant             GM_xmlhttpRequest
 // @grant             GM_getValue
 // @grant             GM_setValue
@@ -20,11 +23,8 @@
 // @updateURL         https://cdn.githubraw.com/CheemsGalaxy/Script-Finder-Modified-by-CheemsGalaxy/main/Script_Finder_Modified_by_CheemsGalaxy.user.js
 // @downloadURL       https://cdn.githubraw.com/CheemsGalaxy/Script-Finder-Modified-by-CheemsGalaxy/main/Script_Finder_Modified_by_CheemsGalaxy.user.js
 // ==/UserScript==
- 
 (function () {
   "use strict";
- 
-  // ---------- Guards ----------
   try {
     if (window.self !== window.top) return;
     if (window.__scriptFinderPlus) return;
@@ -32,8 +32,6 @@
   } catch (e) {
     return;
   }
- 
-  // ---------- i18n ----------
   const translations = {
     "en,en-GB": {
       Author: "Author",
@@ -66,6 +64,11 @@
       SortUpdated: "Recently updated",
       SortTotal: "Total installs",
       SortRating: "Top rated",
+      UpdateAvailable: "A new version is available: {v}",
+      UpdateNow: "Update now",
+      SkipVersion: "Skip this version",
+      ClearCache: "Clear cache",
+      Feedback: "Feedback",
     },
     "zh-CN,zh,zh-SG": {
       Author: "作者",
@@ -96,6 +99,11 @@
       SortUpdated: "最近更新",
       SortTotal: "总安装量",
       SortRating: "评分最高",
+      UpdateAvailable: "有新版本可用：{v}",
+      UpdateNow: "立即更新",
+      SkipVersion: "跳过此版本",
+      ClearCache: "清除缓存",
+      Feedback: "反馈",
     },
     "zh-TW,zh-HK,zh-MO": {
       Author: "作者",
@@ -126,6 +134,11 @@
       SortUpdated: "最近更新",
       SortTotal: "總安裝量",
       SortRating: "評分最高",
+      UpdateAvailable: "有新版本可用：{v}",
+      UpdateNow: "立即更新",
+      SkipVersion: "略過此版本",
+      ClearCache: "清除快取",
+      Feedback: "回饋",
     },
     ja: {
       Author: "著者",
@@ -158,6 +171,11 @@
       SortUpdated: "最近更新",
       SortTotal: "総インストール",
       SortRating: "高評価",
+      UpdateAvailable: "新しいバージョンがあります：{v}",
+      UpdateNow: "今すぐ更新",
+      SkipVersion: "このバージョンをスキップ",
+      ClearCache: "キャッシュをクリア",
+      Feedback: "フィードバック",
     },
     vi: {
       Author: "Tác giả",
@@ -190,10 +208,14 @@
       SortUpdated: "Mới cập nhật",
       SortTotal: "Tổng lượt cài",
       SortRating: "Đánh giá cao",
+      UpdateAvailable: "Đã có bản cập nhật mới: {v}",
+      UpdateNow: "Cập nhật ngay",
+      SkipVersion: "Bỏ qua bản này",
+      ClearCache: "Xoá cache",
+      Feedback: "Phản hồi",
     },
   };
   const FALLBACK = translations["en,en-GB"];
- 
   function getTranslations(lang) {
     const norm = String(lang || "en").toLowerCase();
     const base = norm.split("-")[0];
@@ -205,8 +227,6 @@
     }
     return baseMatch || FALLBACK;
   }
- 
-  // ---------- Bootstrap ----------
   function bootstrap() {
     try {
       init();
@@ -219,7 +239,6 @@
   } else {
     setTimeout(bootstrap, 0);
   }
- 
   function init() {
     const userLang =
       (navigator.languages && navigator.languages[0]) ||
@@ -227,23 +246,30 @@
       "en";
     const strings = getTranslations(userLang);
     const t = (key) => strings[key] ?? FALLBACK[key] ?? key;
- 
-    // ---------- Domain ----------
+    const SECOND_LEVEL_SUFFIXES = new Set([
+      "co.uk", "org.uk", "com.au", "co.jp", "co.kr", "com.br", "com.vn",
+      "com.cn", "com.tw", "com.hk", "com.sg", "com.my", "com.ph", "com.id",
+      "com.th", "com.tr", "com.ru", "com.ua", "com.pl", "com.de", "com.fr",
+      "com.es", "com.it", "com.nl", "com.be", "com.ch", "com.at", "com.se",
+      "com.no", "com.dk", "com.fi", "com.ie", "com.pt", "com.gr", "com.cz",
+      "com.hu", "com.ro", "com.bg", "com.hr", "com.rs", "com.sk", "com.si",
+      "com.lt", "com.lv", "com.ee",
+      "co.nz", "co.za", "com.ar", "com.mx", "com.co", "com.pe",
+    ]);
     function getSiteDomain(hostname) {
-      if (/^[\d.]+$/.test(hostname) || hostname.includes(":")) return hostname;
-      const parts = hostname.split(".");
-      if (parts.length <= 2) return hostname;
-      const sld = new Set([
-        "co", "com", "net", "org", "gov", "edu", "ac", "or", "ne", "go",
-      ]);
-      const last = parts[parts.length - 1];
-      const n = last.length === 2 && sld.has(parts[parts.length - 2]) ? 3 : 2;
-      return parts.slice(-n).join(".");
+      const host = String(hostname || "").toLowerCase().replace(/\.$/, "");
+      if (!host) return hostname;
+      if (/^[\d.]+$/.test(host) || host.includes(":")) return hostname;
+      const parts = host.split(".");
+      if (parts.length <= 2) return host;
+      const three = parts.slice(-3).join(".");
+      if (SECOND_LEVEL_SUFFIXES.has(three)) return three;
+      const two = parts.slice(-2).join(".");
+      if (SECOND_LEVEL_SUFFIXES.has(two)) return parts.slice(-3).join(".");
+      return two;
     }
     const domain = getSiteDomain(window.location.hostname || "");
     if (!domain) return;
- 
-    // ---------- Storage ----------
     const store = {
       get(k, d) {
         try {
@@ -255,23 +281,17 @@
       set(k, v) {
         try {
           if (typeof GM_setValue === "function") GM_setValue(k, v);
-        } catch (e) {
-          /* ignore */
-        }
+        } catch (e) {}
       },
     };
- 
-    // ---------- Services ----------
     const SERVICES = {
-      greasyfork: { name: "Greasyfork", base: "https://greasyfork.org" },
-      sleazyfork: { name: "SleazyFork", base: "https://sleazyfork.org" },
+      greasyfork: { name: "Greasyfork", base: "https://greasyfork.org", api: "https://api.greasyfork.org" },
+      sleazyfork: { name: "SleazyFork", base: "https://sleazyfork.org", api: "https://api.sleazyfork.org" },
     };
     let serviceKey = store.get("sf_service", "greasyfork");
     if (!SERVICES[serviceKey]) serviceKey = "greasyfork";
     const svc = () => SERVICES[serviceKey];
-    const PAGE_SIZE = 50;
- 
-    // ---------- Formatting / safety helpers ----------
+    const PAGE_SIZE = 100;
     let nf = null;
     try {
       nf = new Intl.NumberFormat();
@@ -299,14 +319,10 @@
       try {
         const x = new URL(String(u), svc().base);
         if (x.protocol === "https:" && HOST_OK.test(x.hostname)) return x.href;
-      } catch (e) {
-        /* fall through */
-      }
+      } catch (e) {}
       return fallback;
     }
     const isId = (v) => /^\d+$/.test(String(v));
- 
-    // ---------- Trusted Types ----------
     let ttPolicy = null;
     try {
       if (window.trustedTypes && window.trustedTypes.createPolicy) {
@@ -318,32 +334,44 @@
       ttPolicy = null;
     }
     const toTrustedHTML = (s) => (ttPolicy ? ttPolicy.createHTML(s) : s);
- 
-    // ---------- State ----------
     let page = 0;
     let hasMore = true;
     let loading = false;
     let isOpen = false;
     let gen = 0;
     const seen = new Set();
-    let queryTerm = ""; // server-side search term currently applied ("" = plain by-site list)
-    let pendingReplace = false; // clear the list only when the first page of a new query arrives
+    let queryTerm = "";
+    let pendingReplace = false;
+    let requeryOnRetry = false;
+    let pendingUpdate = "";
+    let updateChecked = false;
+    let filterRaf = 0;
     const SORTS = [
       ["", "SortDaily"],
       ["updated", "SortUpdated"],
-      ["total-installs", "SortTotal"],
+      ["total_installs", "SortTotal"],
       ["ratings", "SortRating"],
     ];
     let sortKey = String(store.get("sf_sort", ""));
     if (!SORTS.some(([k]) => k === sortKey)) sortKey = "";
     const CACHE_TTL = 5 * 60 * 1000;
     const cache = new Map();
+    const CDN_URL =
+      "https://cdn.githubraw.com/CheemsGalaxy/Script-Finder-Modified-by-CheemsGalaxy/main/Script_Finder_Modified_by_CheemsGalaxy.user.js";
+    const ISSUES_URL =
+      "https://github.com/CheemsGalaxy/Script-Finder-Modified-by-CheemsGalaxy/issues";
+    const INSTALLED_VERSION =
+      (typeof GM_info !== "undefined" &&
+        GM_info.script &&
+        GM_info.script.version) ||
+      "2026.10.27.2";
+    const UPDATE_INTERVAL = 24 * 60 * 60 * 1000;
+    const STORE_UPDATE_CHECKED = "sf_update_checked";
+    const STORE_UPDATE_SKIP = "sf_update_skip";
     let lastReq = 0;
     let cooldownUntil = 0;
     let cdTimer = 0;
     let topPct = Number(store.get("sf_top", 70)) || 70;
- 
-    // ---------- CSS ----------
     const CSS = `
     :host {
         all: initial;
@@ -367,8 +395,6 @@
     [hidden] { display: none !important; }
     .tab, .panel, .scrim { font: 14px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
     button { font: inherit; color: inherit; }
- 
-    /* ---- Floating tab ---- */
     .tab {
         position: fixed; right: 0; top: 70%;
         transform: translate(calc(100% - 34px), -50%);
@@ -392,8 +418,6 @@
         background: var(--accent); color: var(--accent-fg);
         font-size: 11px; font-weight: 700; line-height: 20px; text-align: center;
     }
- 
-    /* ---- Scrim + panel ---- */
     .scrim {
         position: fixed; inset: 0; background: var(--scrim);
         -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
@@ -415,7 +439,6 @@
         z-index: 2147483647; outline: none;
     }
     .panel.open { opacity: 1; visibility: visible; pointer-events: auto; transform: translate(-50%, -50%) scale(1); }
- 
     header { padding: 16px 16px 12px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 12px; }
     .title-row { display: flex; align-items: center; gap: 8px; min-width: 0; }
     h2 { margin: 0; font-size: 16px; font-weight: 650; letter-spacing: -.01em; }
@@ -427,14 +450,16 @@
         border-radius: 8px; cursor: pointer; transition: background .15s, color .15s;
     }
     .close:hover { background: var(--hover); color: var(--fg); }
- 
+    .banner { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-bottom: 1px solid var(--border); background: color-mix(in srgb, var(--accent) 10%, var(--bg)); }
+    .banner-text { flex: 1; min-width: 0; font-size: 12.5px; font-weight: 600; overflow-wrap: anywhere; }
+    .banner-actions { display: flex; gap: 6px; flex: 0 0 auto; }
+    .banner .btn { padding: 5px 10px; font-size: 12px; }
     .toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     .seg { display: inline-flex; padding: 3px; gap: 2px; background: var(--hover); border: 1px solid var(--border); border-radius: 10px; }
     .seg-btn { border: 0; background: transparent; color: var(--muted); padding: 5px 12px; border-radius: 7px; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: background .15s, color .15s, box-shadow .15s; }
     .seg-btn:hover { color: var(--fg); }
     .seg-btn[aria-pressed="true"] { background: var(--bg); color: var(--fg); box-shadow: 0 1px 2px rgba(0,0,0,.12), 0 0 0 1px var(--border); }
     .gf { margin-left: auto; }
- 
     .btn {
         display: inline-flex; align-items: center; justify-content: center; gap: 6px;
         border: 1px solid transparent; border-radius: 9px; padding: 7px 14px;
@@ -447,7 +472,6 @@
     .btn.ghost:hover { background: var(--hover); opacity: 1; }
     .btn:disabled { opacity: .5; cursor: not-allowed; }
     .btn:focus-visible, .seg-btn:focus-visible, .close:focus-visible, .install:focus-visible, .name:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
- 
     .search {
         width: 100%; padding: 9px 12px 9px 36px; font: inherit; color: var(--fg);
         background: var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M21 21l-4.3-4.3'/%3E%3C/svg%3E") no-repeat 12px center;
@@ -456,11 +480,8 @@
     }
     .search::placeholder { color: var(--muted); }
     .search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--ring); }
- 
     .sel { font: inherit; font-size: 12.5px; font-weight: 600; color: var(--fg); background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 7px 8px; cursor: pointer; max-width: 160px; }
     .sel:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
- 
-    /* ---- List ---- */
     .list { list-style: none; margin: 0; padding: 14px 16px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 10px; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
     .list:empty { display: none; }
     .item { border: 1px solid var(--border); background: var(--card); border-radius: 12px; padding: 12px 14px; transition: border-color .15s, box-shadow .15s, background .15s; }
@@ -475,19 +496,16 @@
     .install { display: inline-flex; align-items: center; background: var(--ok); color: #fff; padding: 6px 14px; border-radius: 9px; text-decoration: none; font-size: 13px; font-weight: 600; transition: filter .15s, transform .1s; }
     .install:hover { filter: brightness(1.08); }
     .install:active { transform: scale(.98); }
- 
-    /* ---- Skeleton ---- */
     .skeletons { padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
     .sk { height: 92px; border-radius: 12px; background: linear-gradient(90deg, var(--card) 25%, var(--hover) 50%, var(--card) 75%); background-size: 200% 100%; border: 1px solid var(--border); animation: shimmer 1.3s linear infinite; }
     @keyframes shimmer { to { background-position: -200% 0; } }
- 
     footer { padding: 12px 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; gap: 8px; }
-    footer:has(.status:empty):has(.more[hidden]) { display: none; }
     .status { margin: 0; color: var(--muted); font-size: 13px; text-align: center; overflow-wrap: anywhere; }
     .status:empty { display: none; }
     .status.loading { animation: blink 1.2s ease-in-out infinite; }
     @keyframes blink { 0%, 100% { opacity: .4; } 50% { opacity: 1; } }
- 
+    .feedback { color: var(--muted); font-size: 12px; text-decoration: none; }
+    .feedback:hover, .feedback:focus-visible { color: var(--accent); text-decoration: underline; }
     @media (max-width: 600px) {
         .panel { top: auto; bottom: 0; left: 0; width: 100%; max-height: 88vh; border-radius: var(--radius) var(--radius) 0 0; transform: translateY(16px); }
         .panel.open { transform: none; }
@@ -497,8 +515,6 @@
         .tab, .panel, .scrim, .item, .btn, .install { transition: none; }
         .status.loading, .sk { animation: none; }
     }`;
- 
-    // ---------- DOM (no innerHTML anywhere) ----------
     const host = document.createElement("div");
     host.id = "sf-host";
     const shadow = host.attachShadow({ mode: "open" });
@@ -529,10 +545,8 @@
     const iconPath = document.createElementNS(SVG_NS, "path");
     iconPath.setAttribute("d", "M8 7l-5 5 5 5M16 7l5 5-5 5M14 4l-4 16");
     icon.appendChild(iconPath);
- 
     const styleEl = document.createElement("style");
     styleEl.textContent = CSS;
- 
     const segBtns = {};
     const seg = el("div", { class: "seg", role: "group", "aria-label": "Service" });
     for (const [key, sv] of Object.entries(SERVICES)) {
@@ -550,14 +564,12 @@
         segBtns[k].setAttribute("aria-pressed", String(k === serviceKey));
     };
     syncSeg();
- 
     const sortSel = el("select", { class: "sel", "aria-label": "Sort" });
     for (const [val, lbl] of SORTS) {
       const o = el("option", { value: val, text: t(lbl) });
       if (val === sortKey) o.selected = true;
       sortSel.appendChild(o);
     }
- 
     shadow.append(
       styleEl,
       el("div", { class: "scrim" }),
@@ -606,6 +618,17 @@
             spellcheck: "false",
           }),
         ),
+        el(
+          "div",
+          { class: "banner", hidden: "" },
+          el("span", { class: "banner-text" }),
+          el(
+            "div",
+            { class: "banner-actions" },
+            el("button", { class: "btn banner-update", type: "button" }),
+            el("button", { class: "btn ghost banner-skip", type: "button" }),
+          ),
+        ),
         el("ul", { class: "list" }),
         el(
           "div",
@@ -619,10 +642,15 @@
           {},
           el("p", { class: "status", role: "status", "aria-live": "polite" }),
           el("button", { class: "btn more", type: "button", hidden: "" }),
+          el("a", {
+            class: "feedback",
+            href: ISSUES_URL,
+            target: "_blank",
+            rel: "noopener noreferrer",
+          }),
         ),
       ),
     );
- 
     const $ = (sel) => shadow.querySelector(sel);
     const tab = $(".tab"),
       badge = $(".badge"),
@@ -636,7 +664,11 @@
       more = $(".more"),
       skel = $(".skeletons"),
       scrim = $(".scrim");
- 
+    const banner = $(".banner"),
+      bannerText = $(".banner-text"),
+      bannerUpdate = $(".banner-update"),
+      bannerSkip = $(".banner-skip"),
+      feedback = $(".feedback");
     const refreshLabels = () => {
       $(".tab-label").textContent = t("Scripts");
       tab.setAttribute("aria-label", "Script Finder – " + t("Scripts"));
@@ -648,16 +680,21 @@
       closeBtn.title = t("Close");
       search.placeholder = t("SearchPlaceholder");
       more.textContent = t("LoadMore");
+      bannerUpdate.textContent = t("UpdateNow");
+      bannerSkip.textContent = t("SkipVersion");
+      feedback.textContent = t("Feedback");
+      if (pendingUpdate)
+        bannerText.textContent = t("UpdateAvailable").replace(
+          "{v}",
+          pendingUpdate,
+        );
     };
     refreshLabels();
- 
-    // ---------- Rendering ----------
     function renderItem(s) {
       const base = svc().base;
       const li = document.createElement("li");
       li.className = "item";
       li._q = `${s.name} ${s.description} ${s.author}`.toLowerCase();
- 
       const a = document.createElement("a");
       a.className = "name";
       a.textContent = s.name || "—";
@@ -667,11 +704,9 @@
         a.target = "_blank";
         a.rel = "noopener noreferrer";
       }
- 
       const p = document.createElement("p");
       p.className = "desc";
       p.textContent = s.description;
- 
       const meta = document.createElement("div");
       meta.className = "meta";
       const rows = [
@@ -691,7 +726,6 @@
         box.append(small, b);
         meta.appendChild(box);
       }
- 
       const install = document.createElement("a");
       install.className = "install";
       install.textContent = `${t("Install")} ${s.version || ""}`.trim();
@@ -700,11 +734,9 @@
         "",
       );
       if (ih) install.setAttribute("href", ih);
- 
       li.append(a, p, meta, install);
       return li;
     }
- 
     function updateCounts() {
       const items = [...list.children];
       const total = items.length;
@@ -714,22 +746,19 @@
       badge.textContent = total + (hasMore ? "+" : "");
       badge.hidden = !total;
     }
- 
     function applyFilter() {
-      const raw = search.value.trim();
-      const q = raw.toLowerCase();
-      // Results that came from the server for this exact term are already filtered.
-      const useLocal = !!q && raw !== queryTerm;
-      for (const li of list.children) li.hidden = useLocal && !li._q.includes(q);
-      updateCounts();
+      if (filterRaf) cancelAnimationFrame(filterRaf);
+      filterRaf = requestAnimationFrame(() => {
+        filterRaf = 0;
+        const q = search.value.trim().toLowerCase();
+        for (const li of list.children) li.hidden = !!q && !li._q.includes(q);
+        updateCounts();
+      });
     }
- 
     function setStatus(text, isLoading = false) {
       status.textContent = text;
       status.classList.toggle("loading", !!isLoading);
     }
- 
-    // ---------- Network ----------
     function gmGet(url, headers) {
       return new Promise((resolve, reject) => {
         let done = false;
@@ -769,7 +798,6 @@
         }
       });
     }
- 
     function logHttp(label, url, r) {
       console.warn(
         `[Script Finder+] ${label} HTTP ${r.status}`,
@@ -780,7 +808,6 @@
         r.text.slice(0, 300),
       );
     }
- 
     function extractList(text) {
       let data;
       try {
@@ -793,7 +820,6 @@
       if (data && Array.isArray(data.scripts)) return data.scripts;
       return null;
     }
- 
     function mapJson(j) {
       const id = String(j && j.id);
       if (!isId(id)) return null;
@@ -814,7 +840,6 @@
         ratingScore: j.fan_score,
       };
     }
- 
     function relevantToDomain(j) {
       if (!Array.isArray(j.domains)) return true;
       return j.domains.some((x) => {
@@ -822,23 +847,94 @@
         return d === domain || d.endsWith("." + domain) || domain.endsWith("." + d);
       });
     }
- 
+    const HTML_LIST_SELECTORS = [
+      "#browse-script-list li[data-script-id]",
+      "ol#browse-script-list li[data-script-id]",
+      ".script-list li[data-script-id]",
+      "li[data-script-id]",
+      "[data-script-id]",
+    ];
+    const ENTITIES = {
+      amp: "&",
+      quot: '"',
+      apos: "'",
+      lt: "<",
+      gt: ">",
+      nbsp: " ",
+    };
+    function decodeEntities(s) {
+      return String(s).replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (m, code) => {
+        if (code.charAt(0) === "#") {
+          const hex = code.charAt(1).toLowerCase() === "x";
+          const n = parseInt(code.slice(hex ? 2 : 1), hex ? 16 : 10);
+          return Number.isFinite(n) ? String.fromCodePoint(n) : m;
+        }
+        const rep = ENTITIES[code.toLowerCase()];
+        return rep === undefined ? m : rep;
+      });
+    }
+    function parseHtmlListFallback(text) {
+      console.warn(
+        "[Script Finder+] Trusted Types policy rejected; using regex fallback",
+      );
+      const items = [];
+      const seenIds = new Set();
+      const tagRe = /<[^>]*\bdata-script-id\s*=\s*"(\d+)"[^>]*>/gi;
+      let m;
+      while ((m = tagRe.exec(text))) {
+        const tag = m[0];
+        const id = m[1];
+        if (seenIds.has(id)) continue;
+        seenIds.add(id);
+        const attr = (name) => {
+          const r = new RegExp(`\\b${name}\\s*=\\s*"([^"]*)"`, "i").exec(tag);
+          return r ? decodeEntities(r[1]) : "";
+        };
+        items.push({
+          id,
+          name: attr("data-script-name"),
+          author: "–",
+          description: "",
+          version: attr("data-script-version"),
+          url: `${svc().base}/scripts/${id}`,
+          createDate: attr("data-script-created-date") || null,
+          updateDate: attr("data-script-updated-date") || null,
+          installs: attr("data-script-total-installs") || null,
+          dailyInstalls: attr("data-script-daily-installs") || null,
+          ratingScore: attr("data-script-rating-score") || null,
+        });
+      }
+      return { items, hasMore: false };
+    }
     function parseHtmlList(text) {
-      let doc;
+      let doc = null;
       try {
         doc = new DOMParser().parseFromString(toTrustedHTML(text), "text/html");
       } catch (e) {
+        const fallback = parseHtmlListFallback(text);
+        if (fallback.items.length) return fallback;
         const err = new Error("trusted-types");
         err.tt = true;
         throw err;
       }
-      const nodes = doc.querySelectorAll("#browse-script-list [data-script-id]");
-      if (!nodes.length) {
+      let nodes = null;
+      for (const sel of HTML_LIST_SELECTORS) {
+        const found = doc.querySelectorAll(sel);
+        if (found.length) {
+          nodes = found;
+          break;
+        }
+      }
+      if (!nodes) {
         const probe =
           (doc.title || "") +
           " " +
           (doc.body ? doc.body.textContent.slice(0, 500) : "");
-        if (/just a moment|attention required|enable javascript and cookies|captcha/i.test(probe))
+        if (
+          /just a moment|attention required|enable javascript and cookies|captcha/i.test(
+            probe,
+          )
+        )
           throw new Error("challenge-page");
         return { items: [], hasMore: false };
       }
@@ -875,8 +971,6 @@
         !next.classList.contains("disabled");
       return { items, hasMore: more_ };
     }
- 
-    // Space requests out (the site has a per-IP rate limiter).
     async function pgGet(url, headers) {
       const wait = lastReq + 700 - Date.now();
       if (wait > 0) await new Promise((r) => setTimeout(r, wait));
@@ -893,7 +987,6 @@
       e.rate = retryAfter(r.headers);
       return e;
     }
- 
     async function fetchPage(n) {
       const key = [serviceKey, domain, sortKey, queryTerm, n].join("|");
       const hit = cache.get(key);
@@ -902,9 +995,6 @@
       cache.set(key, { t: Date.now(), v });
       return v;
     }
- 
-    // By-site JSON first. Fallbacks (search JSON / HTML) are only used for the plain first page,
-    // because they cannot take our query/sort and would just burn more rate-limited requests.
     async function fetchPageNet(n) {
       if (Date.now() < cooldownUntil) {
         const e = new Error("cooldown");
@@ -912,20 +1002,18 @@
         throw e;
       }
       const base = svc().base;
+      const api = svc().api;
       const enc = encodeURIComponent(domain);
       const errors = [];
       let ttHit = false;
       const plain = n === 1 && !queryTerm && !sortKey;
- 
       const params = [];
       if (n > 1) params.push(`page=${n}`);
       if (queryTerm) params.push(`q=${encodeURIComponent(queryTerm)}`);
       if (sortKey) params.push(`sort=${encodeURIComponent(sortKey)}`);
       const qs = params.length ? `?${params.join("&")}` : "";
- 
-      // 1) by-site JSON
       {
-        const url = `${base}/scripts/by-site/${enc}.json${qs}`;
+        const url = `${api}/scripts/by-site/${enc}.json${qs}`;
         try {
           let r = await pgGet(url, { Accept: "application/json" });
           if (r.status === 403 && plain)
@@ -940,6 +1028,11 @@
           if (r.status === 200) {
             const arr = extractList(r.text);
             if (arr) {
+              if (arr.length !== PAGE_SIZE)
+                console.warn(
+                  `[Script Finder+] PAGE_SIZE mismatch: got ${arr.length}, expected ${PAGE_SIZE}`,
+                  url,
+                );
               return {
                 items: arr.map(mapJson).filter(Boolean),
                 hasMore: arr.length >= PAGE_SIZE,
@@ -958,16 +1051,19 @@
           errors.push(`by-site JSON: ${e.kind || e.message}`);
         }
       }
- 
       if (plain) {
-        // 2) search JSON
         {
-          const url = `${base}/scripts.json?q=${enc}&sort=updated`;
+          const url = `${api}/scripts.json?q=${enc}&sort=updated`;
           try {
             const r = await pgGet(url, { Accept: "application/json" });
             if (r.status === 200) {
               const arr = extractList(r.text);
               if (arr) {
+                if (arr.length !== PAGE_SIZE)
+                  console.warn(
+                    `[Script Finder+] PAGE_SIZE mismatch: got ${arr.length}, expected ${PAGE_SIZE}`,
+                    url,
+                  );
                 return {
                   items: arr.filter(relevantToDomain).map(mapJson).filter(Boolean),
                   hasMore: arr.length >= PAGE_SIZE,
@@ -982,8 +1078,6 @@
             errors.push(`search JSON: ${e.kind || e.message}`);
           }
         }
- 
-        // 3) by-site HTML
         {
           const url = `${base}/scripts/by-site/${enc}`;
           try {
@@ -1005,12 +1099,10 @@
           }
         }
       }
- 
       const err = new Error(errors.join("; "));
       err.tt = ttHit;
       throw err;
     }
- 
     function stopCooldown() {
       clearInterval(cdTimer);
       cdTimer = 0;
@@ -1034,8 +1126,12 @@
       tick();
       cdTimer = setInterval(tick, 1000);
     }
- 
     async function loadPage() {
+      if (requeryOnRetry && !loading && hasMore) {
+        requeryOnRetry = false;
+        startQuery(queryTerm);
+        return;
+      }
       if (loading || !hasMore) return;
       loading = true;
       const myGen = gen;
@@ -1076,6 +1172,9 @@
         if (e && e.rate) {
           startCooldown(e.rate);
         } else {
+          const wasPending = pendingReplace;
+          pendingReplace = false;
+          requeryOnRetry = wasPending;
           const detail = String((e && e.message) || "").slice(0, 160);
           setStatus(
             `${e && e.tt ? t("TTBlocked") : t("LoadFailed")}${detail ? ` (${detail})` : ""}`,
@@ -1092,7 +1191,6 @@
         applyFilter();
       }
     }
- 
     function resetList() {
       gen++;
       loading = false;
@@ -1100,6 +1198,7 @@
       page = 0;
       hasMore = true;
       pendingReplace = false;
+      requeryOnRetry = false;
       seen.clear();
       list.textContent = "";
       skel.hidden = true;
@@ -1107,8 +1206,6 @@
       more.hidden = true;
       updateCounts();
     }
- 
-    // New server-side query / sort: keep the current list on screen until the new first page arrives.
     function startQuery(term) {
       gen++;
       loading = false;
@@ -1117,49 +1214,89 @@
       page = 0;
       hasMore = true;
       pendingReplace = true;
+      requeryOnRetry = false;
       more.hidden = true;
       skel.hidden = true;
       setStatus("");
       if (isOpen) loadPage();
     }
- 
-    // ---------- Open / close ----------
     function setOpen(v) {
       isOpen = !!v;
       panel.classList.toggle("open", isOpen);
       scrim.classList.toggle("open", isOpen);
       tab.setAttribute("aria-expanded", String(isOpen));
       if (isOpen) {
+        maybeCheckUpdate();
         if (page === 0 && !loading && hasMore) loadPage();
         setTimeout(() => {
           try {
             if (matchMedia("(pointer: fine)").matches)
               search.focus({ preventScroll: true });
             else panel.focus({ preventScroll: true });
-          } catch (e) {
-            /* ignore */
-          }
+          } catch (e) {}
         }, 60);
       }
     }
     const toggle = () => setOpen(!isOpen);
- 
-    // ---------- Draggable tab ----------
+    function cmpVersion(a, b) {
+      const pa = String(a)
+        .split(/[^0-9]+/)
+        .filter(Boolean)
+        .map(Number);
+      const pb = String(b)
+        .split(/[^0-9]+/)
+        .filter(Boolean)
+        .map(Number);
+      const n = Math.max(pa.length, pb.length);
+      for (let i = 0; i < n; i++) {
+        const x = pa[i] || 0;
+        const y = pb[i] || 0;
+        if (x !== y) return x > y ? 1 : -1;
+      }
+      return 0;
+    }
+    function showUpdate(version) {
+      if (!version || cmpVersion(version, INSTALLED_VERSION) <= 0) return;
+      if (version === String(store.get(STORE_UPDATE_SKIP, ""))) return;
+      pendingUpdate = version;
+      bannerText.textContent = t("UpdateAvailable").replace("{v}", version);
+      banner.hidden = false;
+    }
+    function maybeCheckUpdate() {
+      if (updateChecked) return;
+      const last = Number(store.get(STORE_UPDATE_CHECKED, 0)) || 0;
+      if (last && Date.now() - last < UPDATE_INTERVAL) return;
+      updateChecked = true;
+      store.set(STORE_UPDATE_CHECKED, Date.now());
+      gmGet(CDN_URL, { Accept: "text/plain" })
+        .then((r) => {
+          if (!r || r.status !== 200) return;
+          const m = /\/\/\s*@version\s+([^\s]+)/.exec(r.text);
+          if (m) showUpdate(m[1].trim());
+        })
+        .catch(() => {});
+    }
+    bannerUpdate.addEventListener("click", () => {
+      if (pendingUpdate) openTab(CDN_URL);
+      setOpen(false);
+    });
+    bannerSkip.addEventListener("click", () => {
+      if (pendingUpdate) store.set(STORE_UPDATE_SKIP, pendingUpdate);
+      pendingUpdate = "";
+      banner.hidden = true;
+    });
     function setTop(pct) {
       topPct = Math.min(92, Math.max(8, Number(pct) || 70));
       tab.style.top = topPct + "%";
     }
     setTop(topPct);
- 
     let drag = null;
     tab.addEventListener("pointerdown", (e) => {
       if (e.button !== 0) return;
       drag = { startY: e.clientY, moved: false };
       try {
         tab.setPointerCapture(e.pointerId);
-      } catch (err) {
-        /* ignore */
-      }
+      } catch (err) {}
     });
     tab.addEventListener("pointermove", (e) => {
       if (!drag) return;
@@ -1181,40 +1318,33 @@
       tab.classList.remove("dragging");
     });
     tab.addEventListener("click", (e) => {
-      if (e.detail === 0) toggle(); // keyboard activation
+      if (e.detail === 0) toggle();
     });
- 
-    // ---------- Events ----------
     closeBtn.addEventListener("click", () => {
       setOpen(false);
       tab.focus();
     });
     more.addEventListener("click", loadPage);
     scrim.addEventListener("click", () => setOpen(false));
- 
     let filterTimer = 0;
     let serverTimer = 0;
     search.addEventListener("input", () => {
-      // 1) instant local filter over what is already loaded
       clearTimeout(filterTimer);
       filterTimer = setTimeout(applyFilter, 120);
-      // 2) after a short pause, ask the server so scripts beyond the loaded pages can be found too
       clearTimeout(serverTimer);
       serverTimer = setTimeout(() => {
         const raw = search.value.trim();
         if (raw === queryTerm) return;
         if (raw && raw.length < 2) return;
-        if (!queryTerm && !hasMore && page > 0) return; // everything is loaded: local filter is complete
+        if (!queryTerm && !hasMore && page > 0) return;
         startQuery(raw);
       }, 500);
     });
- 
     sortSel.addEventListener("change", () => {
       sortKey = sortSel.value;
       store.set("sf_sort", sortKey);
       startQuery(queryTerm);
     });
- 
     seg.addEventListener("click", (e) => {
       const bt = e.target && e.target.closest ? e.target.closest(".seg-btn") : null;
       if (!bt) return;
@@ -1227,27 +1357,21 @@
       resetList();
       if (isOpen) loadPage();
     });
- 
     function openTab(url) {
       try {
         if (typeof GM_openInTab === "function") {
           GM_openInTab(url, { active: true, insert: true, setParent: true });
           return;
         }
-      } catch (e) {
-        /* fall back */
-      }
+      } catch (e) {}
       window.open(url, "_blank", "noopener");
     }
     gfBtn.addEventListener("click", () => {
-      // Only add `q` when non-empty: an empty `q=` (plus extra params) makes the site answer HTTP 400.
       let url = `${svc().base}/scripts/by-site/${encodeURIComponent(domain)}`;
       const q = search.value.trim();
       if (q) url += `?q=${encodeURIComponent(q)}`;
       openTab(url);
     });
- 
-    // Keep page hotkeys from firing while typing; minimal focus trap on Tab.
     panel.addEventListener("keydown", (e) => {
       if (e.key === "Tab") {
         const f = [
@@ -1272,7 +1396,6 @@
     });
     for (const ev of ["keyup", "keypress"])
       panel.addEventListener(ev, (e) => e.stopPropagation());
- 
     document.addEventListener(
       "pointerdown",
       (e) => {
@@ -1293,8 +1416,6 @@
     document.addEventListener("fullscreenchange", () => {
       host.style.display = document.fullscreenElement ? "none" : "";
     });
- 
-    // ---------- Menu commands ----------
     try {
       if (typeof GM_registerMenuCommand === "function") {
         GM_registerMenuCommand(`Script Finder+: ${t("MenuToggle")}`, toggle);
@@ -1302,11 +1423,15 @@
           store.set("sf_top", 70);
           setTop(70);
         });
+        GM_registerMenuCommand(`Script Finder+: ${t("ClearCache")}`, () => {
+          cache.clear();
+          store.set(STORE_UPDATE_CHECKED, 0);
+          updateChecked = false;
+          pendingUpdate = "";
+          banner.hidden = true;
+        });
       }
-    } catch (e) {
-      /* ignore */
-    }
- 
+    } catch (e) {}
     (document.documentElement || document.body).appendChild(host);
   }
 })();
