@@ -12,7 +12,8 @@
 // @connect           sleazyfork.org
 // @connect           api.greasyfork.org
 // @connect           api.sleazyfork.org
-// @connect           cdn.githubraw.com
+// @connect           raw.githubusercontent.com
+// @connect           cdn.jsdelivr.net
 // @grant             GM_xmlhttpRequest
 // @grant             GM_getValue
 // @grant             GM_setValue
@@ -20,8 +21,8 @@
 // @grant             GM_openInTab
 // @run-at            document-idle
 // @license           MIT
-// @updateURL         https://cdn.githubraw.com/CheemsGalaxy/Script-Finder-Modified-by-CheemsGalaxy/main/Script_Finder_Modified_by_CheemsGalaxy.user.js
-// @downloadURL       https://cdn.githubraw.com/CheemsGalaxy/Script-Finder-Modified-by-CheemsGalaxy/main/Script_Finder_Modified_by_CheemsGalaxy.user.js
+// @updateURL         https://raw.githubusercontent.com/CheemsGalaxy/Script-Finder-Modified-by-CheemsGalaxy/main/Script_Finder_Modified_by_CheemsGalaxy.user.js
+// @downloadURL       https://raw.githubusercontent.com/CheemsGalaxy/Script-Finder-Modified-by-CheemsGalaxy/main/Script_Finder_Modified_by_CheemsGalaxy.user.js
 // ==/UserScript==
 (function () {
   "use strict";
@@ -357,14 +358,16 @@
     const CACHE_TTL = 5 * 60 * 1000;
     const cache = new Map();
     const CDN_URL =
-      "https://cdn.githubraw.com/CheemsGalaxy/Script-Finder-Modified-by-CheemsGalaxy/main/Script_Finder_Modified_by_CheemsGalaxy.user.js";
+      "https://raw.githubusercontent.com/CheemsGalaxy/Script-Finder-Modified-by-CheemsGalaxy/main/Script_Finder_Modified_by_CheemsGalaxy.user.js";
+    const CDN_FALLBACK =
+      "https://cdn.jsdelivr.net/gh/CheemsGalaxy/Script-Finder-Modified-by-CheemsGalaxy@main/Script_Finder_Modified_by_CheemsGalaxy.user.js";
     const ISSUES_URL =
       "https://github.com/CheemsGalaxy/Script-Finder-Modified-by-CheemsGalaxy/issues";
     const INSTALLED_VERSION =
       (typeof GM_info !== "undefined" &&
         GM_info.script &&
         GM_info.script.version) ||
-      "2026.10.27.2";
+      "2026.10.27.3";
     const UPDATE_INTERVAL = 24 * 60 * 60 * 1000;
     const STORE_UPDATE_CHECKED = "sf_update_checked";
     const STORE_UPDATE_SKIP = "sf_update_skip";
@@ -1268,13 +1271,19 @@
       if (last && Date.now() - last < UPDATE_INTERVAL) return;
       updateChecked = true;
       store.set(STORE_UPDATE_CHECKED, Date.now());
-      gmGet(CDN_URL, { Accept: "text/plain" })
-        .then((r) => {
-          if (!r || r.status !== 200) return;
-          const m = /\/\/\s*@version\s+([^\s]+)/.exec(r.text);
-          if (m) showUpdate(m[1].trim());
-        })
-        .catch(() => {});
+      const check = (i) => {
+        gmGet(i ? CDN_FALLBACK : CDN_URL, { Accept: "text/plain" })
+          .then((r) => {
+            const m =
+              r && r.status === 200 && /\/\/\s*@version\s+([^\s]+)/.exec(r.text);
+            if (!m) throw new Error("no-version");
+            showUpdate(m[1].trim());
+          })
+          .catch(() => {
+            if (!i) check(1);
+          });
+      };
+      check(0);
     }
     bannerUpdate.addEventListener("click", () => {
       if (pendingUpdate) openTab(CDN_URL);
